@@ -19,7 +19,7 @@ import java.io.IOException;
 
 @Slf4j
 @Component
-public class    SecurityFilter extends OncePerRequestFilter {
+public class  SecurityFilter extends OncePerRequestFilter {
     private static final String JWT_HEADER = "Authorization";
     private static final String JWT_TOKEN_PREFIX = "Bearer";
 

@@ -69,7 +69,7 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(req.getPassword()));
         Set<Role> roles = new HashSet<>();
 
-        // Temporary code to insert values to Role table, comment on production
+//         Temporary code to insert values to Role table, comment on production
 //        Optional<Role> roleOptional = roleRepository.findByName(AppConstant.RoleType.ROLE_USER);
 //        if(roleOptional.isEmpty()){
 //            Role userRole = new Role();
@@ -81,7 +81,7 @@ public class AuthService {
 //            roleRepository.save(userRole);
 //            roleRepository.save(adminRole);
 //        }
-        // end of temporary code
+//         end of temporary code
 
         roleRepository.findByName(AppConstant.RoleType.ROLE_USER).ifPresent(roles::add);
 
