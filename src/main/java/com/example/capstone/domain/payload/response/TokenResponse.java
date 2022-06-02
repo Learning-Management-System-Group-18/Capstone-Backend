@@ -1,6 +1,7 @@
-package com.example.capstone.domain.payload;
+package com.example.capstone.domain.payload.response;
 
 import lombok.Data;
+
 
 @Data
 public class TokenResponse {

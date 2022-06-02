@@ -1,6 +1,6 @@
 package com.example.capstone.security;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,10 +17,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@Log4j2
+@Slf4j
 @Component
-public class SecurityFilter extends OncePerRequestFilter {
-    private static final String JWT_HARDER = "Authorization";
+public class    SecurityFilter extends OncePerRequestFilter {
+    private static final String JWT_HEADER = "Authorization";
     private static final String JWT_TOKEN_PREFIX = "Bearer";
 
     @Autowired
@@ -30,7 +30,7 @@ public class SecurityFilter extends OncePerRequestFilter {
     private JwtTokenProvider jwtTokenProvider;
 
     private String getJWTFromRequest( HttpServletRequest request){
-        String bearerToken = request.getHeader(JWT_HARDER);
+        String bearerToken = request.getHeader(JWT_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(JWT_TOKEN_PREFIX)) {
             return bearerToken.substring(7);
         }
@@ -42,9 +42,9 @@ public class SecurityFilter extends OncePerRequestFilter {
         try {
             String token = getJWTFromRequest(request);
             if(token != null && !token.isBlank() && jwtTokenProvider.validateToken(token)) {
-                String username = jwtTokenProvider.getUsername(token);
-                log.info("username : {}", username);
-                UserDetails user = userDetailsService.loadUserByUsername(username);
+                String email = jwtTokenProvider.getEmail(token);
+                log.info("email : {}", email);
+                UserDetails user = userDetailsService.loadUserByUsername(email);
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                         user, user.getPassword(), user.getAuthorities()
                 );
