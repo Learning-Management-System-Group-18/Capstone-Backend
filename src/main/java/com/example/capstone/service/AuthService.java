@@ -29,6 +29,7 @@ import javax.validation.Valid;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -70,17 +71,17 @@ public class AuthService {
         Set<Role> roles = new HashSet<>();
 
 //         Temporary code to insert values to Role table, comment on production
-//        Optional<Role> roleOptional = roleRepository.findByName(AppConstant.RoleType.ROLE_USER);
-//        if(roleOptional.isEmpty()){
-//            Role userRole = new Role();
-//            userRole.setName(AppConstant.RoleType.ROLE_USER);
-//
-//            Role adminRole = new Role();
-//            adminRole.setName(AppConstant.RoleType.ROLE_ADMIN);
-//
-//            roleRepository.save(userRole);
-//            roleRepository.save(adminRole);
-//        }
+        Optional<Role> roleOptional = roleRepository.findByName(AppConstant.RoleType.ROLE_USER);
+        if(roleOptional.isEmpty()){
+            Role userRole = new Role();
+            userRole.setName(AppConstant.RoleType.ROLE_USER);
+
+            Role adminRole = new Role();
+            adminRole.setName(AppConstant.RoleType.ROLE_ADMIN);
+
+            roleRepository.save(userRole);
+            roleRepository.save(adminRole);
+        }
 //         end of temporary code
 
         roleRepository.findByName(AppConstant.RoleType.ROLE_USER).ifPresent(roles::add);
@@ -104,24 +105,28 @@ public class AuthService {
                     )
             );
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            Set<String> roles = SecurityContextHolder.getContext().getAuthentication()
+                    .getAuthorities().stream().map(r -> r.getAuthority()).collect(Collectors.toSet());
             String jwt = jwtTokenProvider.generateToken(authentication);
             TokenResponse tokenResponse = new TokenResponse();
             tokenResponse.setToken(jwt);
+            tokenResponse.setRole(roles);
+
 
             return ResponseUtil.build(AppConstant.ResponseCode.SUCCESS, tokenResponse, HttpStatus.OK);
         } catch (BadCredentialsException e) {
             log.error("Bad Credential", e);
             return ResponseUtil.build(
                     AppConstant.ResponseCode.BAD_CREDENTIALS,
-                    "Email or Password is incorrect",
+                    "Email or password is incorrect",
                     HttpStatus.BAD_REQUEST
             );
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return ResponseUtil.build(
-                    AppConstant.ResponseCode.UNKNOWN_ERROR,
-                    null,
-                    HttpStatus.INTERNAL_SERVER_ERROR
+                    AppConstant.ResponseCode.PASSWORD_INCORRECT,
+                    "Password is incorrect",
+                    HttpStatus.BAD_REQUEST
             );
         }
     }
