@@ -23,9 +23,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 
-import javax.validation.Valid;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -71,7 +69,7 @@ public class AuthService {
         Set<Role> roles = new HashSet<>();
 
 //         Temporary code to insert values to Role table, comment on production
-        Optional<Role> roleOptional = roleRepository.findByName(AppConstant.RoleType.ROLE_USER);
+        Optional<Role> roleOptional = roleRepository.findByName(AppConstant.RoleType.ROLE_ADMIN);
         if(roleOptional.isEmpty()){
             Role userRole = new Role();
             userRole.setName(AppConstant.RoleType.ROLE_USER);
@@ -84,7 +82,7 @@ public class AuthService {
         }
 //         end of temporary code
 
-        roleRepository.findByName(AppConstant.RoleType.ROLE_USER).ifPresent(roles::add);
+        roleRepository.findByName(AppConstant.RoleType.ROLE_ADMIN).ifPresent(roles::add);
 
         user.setRoles(roles);
         userRepository.save(user);

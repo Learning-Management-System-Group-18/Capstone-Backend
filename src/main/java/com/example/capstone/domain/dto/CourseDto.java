@@ -1,7 +1,5 @@
 package com.example.capstone.domain.dto;
 
-
-import com.example.capstone.domain.dao.Category;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

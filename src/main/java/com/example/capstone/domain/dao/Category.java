@@ -8,7 +8,6 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
@@ -26,7 +25,6 @@ public class Category extends BaseDAO {
     private Long id;
 
     private String title;
-
 
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "category")

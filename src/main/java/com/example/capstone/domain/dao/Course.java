@@ -1,6 +1,8 @@
 package com.example.capstone.domain.dao;
 
 import com.example.capstone.domain.common.BaseDAO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -8,6 +10,8 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+
+import java.util.List;
 
 import javax.persistence.*;
 
@@ -38,4 +42,7 @@ public class Course extends BaseDAO {
     @JoinColumn(name = "category_id")
     private Category category;
 
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "course")
+    private List<Section> sections;
 }
