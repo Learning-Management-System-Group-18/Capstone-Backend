@@ -1,14 +1,11 @@
 package com.example.capstone.domain.dao;
 
-import java.util.List;
-
 import javax.persistence.*;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import com.example.capstone.domain.common.BaseDAO;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,16 +13,17 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "section")
-@SQLDelete(sql = "UPDATE section SET is_deleted = true WHERE id = ?")
+@Table(name = "video")
+@SQLDelete(sql = "UPDATE video SET is_deleted = true WHERE id = ?")
 @Where(clause = "is_deleted = false")
-public class Section extends BaseDAO{
+public class Video extends BaseDAO {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,11 +31,11 @@ public class Section extends BaseDAO{
 
     private String title;
 
-    @ManyToOne
-    @JoinColumn(name = "course_id")
-    private Course course;
+    private String description;
 
-    @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "section")
-    private List<Video> videos;
+    private String link;
+
+    @ManyToOne
+    @JoinColumn(name = "section_id")
+    private Section section;
 }
