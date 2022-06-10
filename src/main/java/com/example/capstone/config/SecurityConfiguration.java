@@ -36,7 +36,7 @@ public class SecurityConfiguration{
         //remove session
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-        //filer jwt
+        //filter jwt
         http.addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
