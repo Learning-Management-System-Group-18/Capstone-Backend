@@ -7,17 +7,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/course")
+@RequestMapping("/")
 public class CourseController {
     @Autowired
     private CourseService courseService;
 
-    @GetMapping("")
+    @GetMapping("/course")
     public ResponseEntity<Object> getAllCourses() {
         return courseService.getAll();
     }
 
-    @PostMapping("")
+    @PostMapping("/admin/course")
     public ResponseEntity<Object> createNewCourse(@RequestParam(value = "categoryId")Long categoryId,
                                                   @RequestBody CourseDto request){
         return courseService.createNewCourse(categoryId,request);

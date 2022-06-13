@@ -2,7 +2,6 @@ package com.example.capstone.controller;
 
 import com.example.capstone.domain.dao.Category;
 import com.example.capstone.domain.dto.CategoryDto;
-import com.example.capstone.domain.dto.CourseDto;
 import com.example.capstone.service.CategoryService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,11 +14,17 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
+@RequestMapping("/")
 @AllArgsConstructor
 @CrossOrigin
 public class CategoryController {
     @Autowired
     private CategoryService categoryService;
+
+
+    @PostMapping("/admin/category")
+    public ResponseEntity<Object> createNewCategory(@RequestBody CategoryDto request){
+        return categoryService.addNew(request);
 
     @PostMapping(
             path = "/admin/category",

@@ -2,7 +2,7 @@ package com.example.capstone.service;
 
 import com.example.capstone.domain.dao.User;
 import com.example.capstone.repository.UserRepository;
-import lombok.extern.log4j.Log4j2;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-@Log4j2
 @Service
 public class UserService implements UserDetailsService {
 
