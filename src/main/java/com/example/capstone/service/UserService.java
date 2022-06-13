@@ -19,11 +19,11 @@ public class UserService implements UserDetailsService {
     private UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> userOptional = userRepository.getDistinctTopByUsername(username);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Optional<User> userOptional = userRepository.findUserByEmail(email);
 
         if (userOptional.isEmpty()){
-            throw new UsernameNotFoundException("username not found");
+            throw new UsernameNotFoundException("email not found");
         }
         return userOptional.get();
     }

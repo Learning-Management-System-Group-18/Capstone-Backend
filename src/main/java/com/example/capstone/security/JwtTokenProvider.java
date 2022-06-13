@@ -2,23 +2,23 @@ package com.example.capstone.security;
 
 import com.example.capstone.domain.dao.User;
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.Keys;
-import lombok.extern.log4j.Log4j2;
+import io.jsonwebtoken.security.SignatureException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
+import io.jsonwebtoken.security.Keys;
 
 import java.security.Key;
-import java.security.SignatureException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-@Log4j2
+@Slf4j
 @Component
 public class JwtTokenProvider {
     private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
-    private Long expiration = 1000L * 60 * 60;
+    private final Long expiration = 1000L * 60 * 60 * 24; //1 day
 
     public String generateToken(Authentication authentication){
         final User user = (User) authentication.getPrincipal();
@@ -27,7 +27,8 @@ public class JwtTokenProvider {
         Date expireDate = new Date(now.getTime() + expiration);
 
         Map<String, Object> claims = new HashMap<>();
-        claims.put("username", user.getUsername());
+        claims.put("email", user.getUsername());
+        claims.put("roles", user.getRoles());
 
         return Jwts.builder()
                 .setId(user.getId().toString())
@@ -43,6 +44,8 @@ public class JwtTokenProvider {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
+        } catch (SignatureException ex) {
+            log.error("Invalid Jwt Signature: {} ", ex.getMessage());
         } catch (MalformedJwtException ex) {
             log.error("Invalid Jwt Token: {} ", ex.getMessage());
         } catch (ExpiredJwtException ex) {
@@ -54,9 +57,8 @@ public class JwtTokenProvider {
         }
         return false;
     }
-
-    public String getUsername(String token){
+    public String getEmail(String token){
         Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
-        return claims.get("username").toString();
+        return claims.get("email").toString();
     }
 }

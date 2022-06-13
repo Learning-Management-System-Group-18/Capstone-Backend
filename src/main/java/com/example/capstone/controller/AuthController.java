@@ -1,35 +1,38 @@
 package com.example.capstone.controller;
 
-import com.example.capstone.domain.payload.EmailPassword;
+
+import com.example.capstone.domain.payload.request.LoginRequest;
+import com.example.capstone.domain.payload.request.RegisterRequest;
+
 import com.example.capstone.service.AuthService;
-import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-import java.security.Principal;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+
 
 @RestController
-@RequestMapping("/")
+@CrossOrigin
 public class AuthController {
 
     @Autowired
     private AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<Object> register(@RequestBody EmailPassword emailPassword, Principal principal) {
-        if(principal!= null){
-            return authService.register(emailPassword, principal.getName());
-        }
-        return authService.register(emailPassword, null);
+    public ResponseEntity<Object> register(@Valid @RequestBody RegisterRequest req) {
+        return authService.register(req);
     }
 
     @PostMapping("/login")
-    @SecurityRequirements
-    public ResponseEntity<Object> generateToken(@RequestBody EmailPassword req) {
+    public ResponseEntity<Object> generateToken(@RequestBody LoginRequest req) {
         return authService.generateToken(req);
     }
+
+    @GetMapping("/admin/test")
+    public ResponseEntity<Object> dashboardAdmin() {
+        return ResponseEntity.ok("This is admin");
+    }
+
 }
