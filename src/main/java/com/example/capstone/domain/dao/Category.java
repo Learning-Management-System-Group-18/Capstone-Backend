@@ -26,6 +26,15 @@ public class Category extends BaseDAO {
 
     private String title;
 
+    private String description;
+
+    @JsonIgnore
+    private String urlBucket;
+
+    private String urlImage;
+
+    private String imageFileName;
+
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "category")
     private List<Course> courses;
