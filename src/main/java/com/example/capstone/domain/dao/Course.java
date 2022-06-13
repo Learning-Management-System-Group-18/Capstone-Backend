@@ -32,11 +32,10 @@ public class Course extends BaseDAO {
 
     private String title;
 
-    private double rating;
-
     private String description;
 
-    private String thumbnail;
+    private String urlImage;
+
 
     @ManyToOne
     @JoinColumn(name = "category_id")

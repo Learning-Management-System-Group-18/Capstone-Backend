@@ -21,11 +21,6 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
-
-    @PostMapping("/admin/category")
-    public ResponseEntity<Object> createNewCategory(@RequestBody CategoryDto request){
-        return categoryService.addNew(request);
-
     @PostMapping(
             path = "/admin/category",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
