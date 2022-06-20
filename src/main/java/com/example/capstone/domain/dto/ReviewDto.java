@@ -1,7 +1,9 @@
 package com.example.capstone.domain.dto;
 
+import com.example.capstone.constant.AppConstant;
+import com.example.capstone.domain.payload.response.RegisterResponse;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -10,20 +12,22 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class SlideDto {
-    private Long id;
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class ReviewDto {
+    private RegisterResponse user;
 
-    private String title;
+    private String review;
 
-    private String description;
+    private int rating;
 
-    private String link;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = AppConstant.DATE_JSON_FORMAT)
+    private LocalDateTime reviewDate;
 
-    private SectionDto section;
 }

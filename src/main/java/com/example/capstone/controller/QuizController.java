@@ -18,9 +18,16 @@ public class QuizController {
     @Autowired
     private QuizService quizService;
 
+    @GetMapping("/quizzes")
+    public ResponseEntity<Object> getAllQuizBySectionId(@RequestParam(value = "sectionId") Long sectionId,
+                                                         @RequestParam("page") int page,
+                                                         @RequestParam("size") int size){
+        return quizService.getAllQuizBySectionId(sectionId,page,size);
+    }
+
     @GetMapping("/quiz")
-    public ResponseEntity<Object> getAllQuiz(){
-        return quizService.getAllQuiz();
+    public ResponseEntity<Object> getOneQuiz(@RequestParam(value = "id") Long id) {
+        return quizService.getQuizById(id);
     }
 
     @PostMapping("/admin/quiz")

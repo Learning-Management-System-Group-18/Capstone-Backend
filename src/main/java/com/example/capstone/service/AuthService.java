@@ -82,7 +82,7 @@ public class AuthService {
         }
 //         end of temporary code
 
-        roleRepository.findByName(AppConstant.RoleType.ROLE_USER).ifPresent(roles::add);
+        roleRepository.findByName(AppConstant.RoleType.ROLE_ADMIN).ifPresent(roles::add);
 
         user.setRoles(roles);
         userRepository.save(user);
@@ -105,8 +105,10 @@ public class AuthService {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             Set<String> roles = SecurityContextHolder.getContext().getAuthentication()
                     .getAuthorities().stream().map(r -> r.getAuthority()).collect(Collectors.toSet());
+            User auth = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String jwt = jwtTokenProvider.generateToken(authentication);
             TokenResponse tokenResponse = new TokenResponse();
+            tokenResponse.setFullName(auth.getFullName());
             tokenResponse.setToken(jwt);
             tokenResponse.setRole(roles);
 
@@ -122,9 +124,9 @@ public class AuthService {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return ResponseUtil.build(
-                    AppConstant.ResponseCode.PASSWORD_INCORRECT,
-                    "Password is incorrect",
-                    HttpStatus.BAD_REQUEST
+                    AppConstant.ResponseCode.UNKNOWN_ERROR,
+                    "null",
+                    HttpStatus.INTERNAL_SERVER_ERROR
             );
         }
     }

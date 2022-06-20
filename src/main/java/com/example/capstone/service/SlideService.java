@@ -4,8 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.example.capstone.domain.dao.Video;
+import com.example.capstone.domain.dto.SectionDto;
+import com.example.capstone.domain.dto.VideoDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -31,20 +37,42 @@ public class SlideService {
     @Autowired
     private SlideRepository slideRepository;
 
-    public ResponseEntity<Object> getAllSlide() {
+    public ResponseEntity<Object> getAllSlideBySectionId(Long sectionId, int page, int size) {
         log.info("Executing get all slide");
         try {
-            List<Slide> slideList = slideRepository.findAll();
-            List<SlideDto> slideDtoList = new ArrayList<>();
-            for (Slide slide: slideList){
-                slideDtoList.add(mapper.map(slide, SlideDto.class));
+            Pageable pageable = PageRequest.of(page-1,size);
+            Page<Slide> slides = slideRepository.findAllBySectionId(sectionId,pageable);
+
+            List<SlideDto> request = new ArrayList<>();
+            for (Slide slide: slides){
+                SlideDto slideDto = mapper.map(slide, SlideDto.class);
+                request.add(slideDto);
             }
             log.info("Successfully retrieved all slide");
-            return ResponseUtil.build(ResponseCode.SUCCESS, slideDtoList, HttpStatus.OK);
+            return ResponseUtil.build(ResponseCode.SUCCESS, request, HttpStatus.OK);
         } catch (Exception e){
             log.error("An error occurred while trying to get all slide. Error : {}", e.getMessage());
             return ResponseUtil.build(ResponseCode.UNKNOWN_ERROR, null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    public ResponseEntity<Object> getSlideById(Long id) {
+        log.info("Executing get Slide with ID : {}", id);
+        try {
+            Optional<Slide> slide = slideRepository.findById(id);
+            if (slide.isEmpty()) {
+                log.info("Slide with ID [{}] not found", id);
+                return ResponseUtil.build(ResponseCode.DATA_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
+            }
+
+            SlideDto request = mapper.map(slide, SlideDto.class);
+            log.info("Successfully retrieved Slide with ID : {}", id);
+            return ResponseUtil.build(ResponseCode.SUCCESS,request,HttpStatus.OK);
+        } catch (Exception e ) {
+            log.error("An error occurred while trying to get Slide with ID : {}. Error : {}", id, e.getMessage());
+            return ResponseUtil.build(ResponseCode.UNKNOWN_ERROR,null,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 
     public ResponseEntity<Object> createNewSlide(Long sectionId, SlideDto request){
