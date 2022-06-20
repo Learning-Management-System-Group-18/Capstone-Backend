@@ -62,4 +62,46 @@ public class QuizService {
             return ResponseUtil.build(ResponseCode.UNKNOWN_ERROR, null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    public ResponseEntity<Object> updateQuiz(Long quizId, QuizDto request){
+        log.info("Executing update quiz");
+        try {
+            Optional<Quiz> optionalQuiz = quizRepository.findById(quizId);
+            if (optionalQuiz.isEmpty()) {
+                log.info("Quiz with Id [{}] not found", quizId);
+                return ResponseUtil.build(ResponseCode.DATA_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
+            }
+            Optional<Section> section = sectionRepository.findById(optionalQuiz.get().getSection().getId());
+            optionalQuiz.ifPresent(quiz -> {
+                quiz.setId(quizId);
+                quiz.setTitle(request.getTitle());
+                quiz.setDescription(request.getDescription());
+                quiz.setLink(request.getLink());
+                quiz.setSection(section.get());;
+                quizRepository.save(quiz);
+            });
+            log.info("Successfully update quiz");
+            return ResponseUtil.build(ResponseCode.SUCCESS, mapper.map(optionalQuiz.get(), QuizDto.class), HttpStatus.OK);
+        } catch (Exception e){
+            log.error("An Error occurred while trying to updated quiz. Error:{}",e.getMessage());
+            return ResponseUtil.build(ResponseCode.UNKNOWN_ERROR, null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<Object> deleteById(Long id){
+        log.info("Executing delete existing quiz");
+        try {
+            Optional<Quiz> optionalQuiz = quizRepository.findById(id);
+            if (optionalQuiz.isEmpty()){
+                log.info("Quiz with Id : [{}] is not found",id);
+                return ResponseUtil.build(ResponseCode.DATA_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
+            }
+            quizRepository.delete(optionalQuiz.get());
+            log.info("Successfully delete quiz with ID : [{}]", id);
+            return ResponseUtil.build(ResponseCode.SUCCESS, null, HttpStatus.OK);
+        } catch (Exception e){
+            log.info("An error occurred while trying to delete existing quiz. Error : {}",e.getMessage());
+            return ResponseUtil.build(ResponseCode.UNKNOWN_ERROR, null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
