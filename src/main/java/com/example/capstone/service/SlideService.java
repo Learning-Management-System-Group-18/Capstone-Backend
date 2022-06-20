@@ -62,4 +62,46 @@ public class SlideService {
             return ResponseUtil.build(ResponseCode.UNKNOWN_ERROR, null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    public ResponseEntity<Object> updateSlide(Long slideId, SlideDto request){
+        log.info("Executing update slide");
+        try {
+            Optional<Slide> optionalSlide = slideRepository.findById(slideId);
+            if (optionalSlide.isEmpty()) {
+                log.info("Slide with Id [{}] not found", slideId);
+                return ResponseUtil.build(ResponseCode.DATA_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
+            }
+            Optional<Section> section = sectionRepository.findById(optionalSlide.get().getSection().getId());
+            optionalSlide.ifPresent(slide -> {
+                slide.setId(slideId);
+                slide.setTitle(request.getTitle());
+                slide.setDescription(request.getDescription());
+                slide.setLink(request.getLink());
+                slide.setSection(section.get());;
+                slideRepository.save(slide);
+            });
+            log.info("Successfully update slide");
+            return ResponseUtil.build(ResponseCode.SUCCESS, mapper.map(optionalSlide.get(), SlideDto.class), HttpStatus.OK);
+        } catch (Exception e){
+            log.error("An Error occurred while trying to updated slide. Error:{}",e.getMessage());
+            return ResponseUtil.build(ResponseCode.UNKNOWN_ERROR, null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<Object> deleteById(Long id){
+        log.info("Executing delete existing slide");
+        try {
+            Optional<Slide> optionalSlide = slideRepository.findById(id);
+            if (optionalSlide.isEmpty()){
+                log.info("Slide with Id : [{}] is not found",id);
+                return ResponseUtil.build(ResponseCode.DATA_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
+            }
+            slideRepository.delete(optionalSlide.get());
+            log.info("Successfully delete slide with ID : [{}]", id);
+            return ResponseUtil.build(ResponseCode.SUCCESS, null, HttpStatus.OK);
+        } catch (Exception e){
+            log.info("An error occurred while trying to delete existing slide. Error : {}",e.getMessage());
+            return ResponseUtil.build(ResponseCode.UNKNOWN_ERROR, null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
