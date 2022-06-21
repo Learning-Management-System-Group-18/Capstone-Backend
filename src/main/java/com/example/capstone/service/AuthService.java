@@ -68,7 +68,7 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(req.getPassword()));
         Set<Role> roles = new HashSet<>();
 
-//         Temporary code to insert values to Role table, comment on production
+//         Temporary code to insert values to Role table, comment on productions
 //        Optional<Role> roleOptional = roleRepository.findByName(AppConstant.RoleType.ROLE_USER);
 //        if(roleOptional.isEmpty()){
 //            Role userRole = new Role();
