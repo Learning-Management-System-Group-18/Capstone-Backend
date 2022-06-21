@@ -28,5 +28,6 @@ public class MentorDto {
     @JsonIgnore
     private String imageFileName;
 
+    @JsonIgnore
     private CourseDto course;
 }

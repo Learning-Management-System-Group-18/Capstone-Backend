@@ -30,5 +30,6 @@ public class ToolDto {
     @JsonIgnore
     private String imageFileName;
 
+    @JsonIgnore
     private CourseDto course;
 }

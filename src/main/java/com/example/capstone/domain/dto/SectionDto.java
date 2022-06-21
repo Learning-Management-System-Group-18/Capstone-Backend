@@ -22,6 +22,7 @@ public class SectionDto {
 
     private String title;
 
+    @JsonIgnore
     private CourseDto course;
     
 }
