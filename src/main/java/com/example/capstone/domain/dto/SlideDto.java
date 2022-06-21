@@ -1,5 +1,6 @@
 package com.example.capstone.domain.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
@@ -25,5 +26,6 @@ public class SlideDto {
 
     private String link;
 
+    @JsonIgnore
     private SectionDto section;
 }

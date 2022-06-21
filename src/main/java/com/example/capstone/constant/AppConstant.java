@@ -42,5 +42,9 @@ public class AppConstant {
         ROLE_ADMIN
     }
 
+    public enum Level {
+        BEGINNER, INTERMEDIATE, ADVANCED
+    }
+
 
 }
