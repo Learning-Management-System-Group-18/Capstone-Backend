@@ -69,20 +69,20 @@ public class AuthService {
         Set<Role> roles = new HashSet<>();
 
 //         Temporary code to insert values to Role table, comment on production
-        Optional<Role> roleOptional = roleRepository.findByName(AppConstant.RoleType.ROLE_USER);
-        if(roleOptional.isEmpty()){
-            Role userRole = new Role();
-            userRole.setName(AppConstant.RoleType.ROLE_USER);
-
-            Role adminRole = new Role();
-            adminRole.setName(AppConstant.RoleType.ROLE_ADMIN);
-
-            roleRepository.save(userRole);
-            roleRepository.save(adminRole);
-        }
+//        Optional<Role> roleOptional = roleRepository.findByName(AppConstant.RoleType.ROLE_USER);
+//        if(roleOptional.isEmpty()){
+//            Role userRole = new Role();
+//            userRole.setName(AppConstant.RoleType.ROLE_USER);
+//
+//            Role adminRole = new Role();
+//            adminRole.setName(AppConstant.RoleType.ROLE_ADMIN);
+//
+//            roleRepository.save(userRole);
+//            roleRepository.save(adminRole);
+//        }
 //         end of temporary code
 
-        roleRepository.findByName(AppConstant.RoleType.ROLE_ADMIN).ifPresent(roles::add);
+        roleRepository.findByName(AppConstant.RoleType.ROLE_USER).ifPresent(roles::add);
 
         user.setRoles(roles);
         userRepository.save(user);

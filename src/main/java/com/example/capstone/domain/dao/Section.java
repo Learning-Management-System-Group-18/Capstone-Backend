@@ -47,5 +47,6 @@ public class Section extends BaseDAO{
 
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "section")
-    private List<Quiz> quizs;
+    private List<Quiz> quizzes;
+
 }
