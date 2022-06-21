@@ -1,7 +1,7 @@
-package com.example.capstone.domain.dto;
+package com.example.capstone.domain.payload.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 @Data
 @Builder
@@ -16,14 +17,18 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class SlideDto {
+public class CategoryResponse {
     private Long id;
 
     private String title;
 
     private String description;
 
-    private String link;
+    @JsonIgnore
+    private String urlBucket;
 
-    private SectionDto section;
+    private String urlImage;
+
+    @JsonIgnore
+    private String imageFileName;
 }

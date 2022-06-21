@@ -34,7 +34,13 @@ public class Course extends BaseDAO {
 
     private String description;
 
+    private String urlBucket;
+
     private String urlImage;
+
+    private String imageFileName;
+
+    private Long countCourse;
 
 
     @ManyToOne
@@ -44,4 +50,12 @@ public class Course extends BaseDAO {
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "course")
     private List<Section> sections;
+
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "course")
+    private List<Mentor> mentors;
+
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "course")
+    private List<Tool> tools;
 }

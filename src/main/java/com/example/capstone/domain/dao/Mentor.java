@@ -2,15 +2,15 @@ package com.example.capstone.domain.dao;
 
 import com.example.capstone.domain.common.BaseDAO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -18,17 +18,16 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "category")
-@SQLDelete(sql = "UPDATE category SET is_deleted = true WHERE id = ?")
+@Table(name = "mentor")
+@SQLDelete(sql = "UPDATE mentor SET is_deleted = true WHERE id = ?")
 @Where(clause = "is_deleted = false")
-public class Category extends BaseDAO {
+public class Mentor extends BaseDAO {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String title;
-
-    private String description;
+    private String name;
 
     private String urlBucket;
 
@@ -36,11 +35,7 @@ public class Category extends BaseDAO {
 
     private String imageFileName;
 
-    private Integer countUser;
-
-    private Integer countCourse ;
-
-    @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "category")
-    private List<Course> courses;
+    @ManyToOne
+    @JoinColumn(name = "course_id")
+    private Course course;
 }

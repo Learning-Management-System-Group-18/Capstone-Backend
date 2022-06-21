@@ -18,9 +18,16 @@ public class SlideController {
     @Autowired
     private SlideService slideService;
 
+    @GetMapping("/slides")
+    public ResponseEntity<Object> getAllSlideBySectionId(@RequestParam(value = "sectionId") Long sectionId,
+                                                         @RequestParam("page") int page,
+                                                         @RequestParam("size") int size){
+        return slideService.getAllSlideBySectionId(sectionId,page,size);
+    }
+
     @GetMapping("/slide")
-    public ResponseEntity<Object> getAllSlide(){
-        return slideService.getAllSlide();
+    public ResponseEntity<Object> getOneSlide(@RequestParam(value = "id") Long id) {
+        return slideService.getSlideById(id);
     }
 
     @PostMapping("/admin/slide")

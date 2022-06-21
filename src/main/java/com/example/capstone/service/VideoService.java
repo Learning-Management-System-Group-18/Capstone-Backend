@@ -6,6 +6,9 @@ import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -32,20 +35,42 @@ public class VideoService {
     @Autowired
     private VideoRepository videoRepository;
 
-    public ResponseEntity<Object> getAllVideo() {
+    public ResponseEntity<Object> getAllVideoBySectionId(Long sectionId, int page, int size) {
         log.info("Executing get all video");
         try {
-            List<Video> videoList = videoRepository.findAll();
-            List<VideoDto> videoDtoList = new ArrayList<>();
-            for (Video video: videoList){
-                videoDtoList.add(mapper.map(video, VideoDto.class));
+            Pageable pageable = PageRequest.of(page-1,size);
+            Page<Video> videos = videoRepository.findAllBySectionId(sectionId,pageable);
+
+            List<VideoDto> request = new ArrayList<>();
+            for (Video video: videos){
+                VideoDto videoDto = mapper.map(video, VideoDto.class);
+                request.add(videoDto);
             }
             log.info("Successfully retrieved all video");
-            return ResponseUtil.build(ResponseCode.SUCCESS, videoDtoList, HttpStatus.OK);
+            return ResponseUtil.build(ResponseCode.SUCCESS, request, HttpStatus.OK);
         } catch (Exception e){
             log.error("An error occurred while trying to get all video. Error : {}", e.getMessage());
             return ResponseUtil.build(ResponseCode.UNKNOWN_ERROR, null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    public ResponseEntity<Object> getVideoById(Long id) {
+        log.info("Executing get Video with ID : {}", id);
+        try {
+            Optional<Video> video = videoRepository.findById(id);
+            if (video.isEmpty()) {
+                log.info("Video with ID [{}] not found", id);
+                return ResponseUtil.build(ResponseCode.DATA_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
+            }
+
+            VideoDto request = mapper.map(video, VideoDto.class);
+            log.info("Successfully retrieved Video with ID : {}", id);
+            return ResponseUtil.build(ResponseCode.SUCCESS,request,HttpStatus.OK);
+        } catch (Exception e ) {
+            log.error("An error occurred while trying to get Video with ID : {}. Error : {}", id, e.getMessage());
+            return ResponseUtil.build(ResponseCode.UNKNOWN_ERROR,null,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 
     public ResponseEntity<Object> createNewVideo(Long sectionId, VideoDto request){
