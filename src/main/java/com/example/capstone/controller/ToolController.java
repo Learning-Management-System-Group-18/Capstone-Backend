@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/")
+@CrossOrigin
 public class ToolController {
     @Autowired
     ToolService toolService;

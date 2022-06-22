@@ -9,6 +9,7 @@ import com.example.capstone.service.SectionService;
 
 @RestController
 @RequestMapping("/")
+@CrossOrigin
 public class SectionController {
     @Autowired
     private SectionService sectionService;
