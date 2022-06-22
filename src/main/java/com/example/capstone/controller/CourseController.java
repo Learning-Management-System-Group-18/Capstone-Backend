@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/")
+@CrossOrigin
 public class CourseController {
     @Autowired
     private CourseService courseService;
