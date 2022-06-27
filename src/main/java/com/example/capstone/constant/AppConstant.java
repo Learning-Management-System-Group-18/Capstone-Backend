@@ -1,6 +1,6 @@
 package com.example.capstone.constant;
 
-import java.util.UUID;
+
 
 public class AppConstant {
     private AppConstant() {}
@@ -45,6 +45,11 @@ public class AppConstant {
     public enum Level {
         BEGINNER, INTERMEDIATE, ADVANCED
     }
+
+    public enum Gender {
+        MALE, FEMALE
+    }
+
 
 
 }

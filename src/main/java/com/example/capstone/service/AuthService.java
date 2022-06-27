@@ -3,11 +3,13 @@ package com.example.capstone.service;
 import com.example.capstone.constant.AppConstant;
 import com.example.capstone.domain.dao.Role;
 import com.example.capstone.domain.dao.User;
+import com.example.capstone.domain.dao.UserProfile;
 import com.example.capstone.domain.payload.request.LoginRequest;
 import com.example.capstone.domain.payload.request.RegisterRequest;
 import com.example.capstone.domain.payload.response.RegisterResponse;
 import com.example.capstone.domain.payload.response.TokenResponse;
 import com.example.capstone.repository.RoleRepository;
+import com.example.capstone.repository.UserProfileRepository;
 import com.example.capstone.repository.UserRepository;
 import com.example.capstone.security.JwtTokenProvider;
 import com.example.capstone.util.ResponseUtil;
@@ -25,6 +27,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -32,6 +35,10 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class AuthService {
+
+    @Autowired
+    private UserProfileRepository userProfileRepository;
+
     @Autowired
     private UserRepository userRepository;
 
@@ -65,6 +72,8 @@ public class AuthService {
 
         log.info("User doesnt exist yet, creating new user");
         User user = modelMapper.map(req, User.class);
+        UserProfile userProfile = new UserProfile();
+        userProfile.setUser(user);
         user.setPassword(passwordEncoder.encode(req.getPassword()));
         Set<Role> roles = new HashSet<>();
 
@@ -82,10 +91,11 @@ public class AuthService {
 //        }
 //         end of temporary code
 
-        roleRepository.findByName(AppConstant.RoleType.ROLE_USER).ifPresent(roles::add);
+        roleRepository.findByName(AppConstant.RoleType.ROLE_ADMIN).ifPresent(roles::add);
 
         user.setRoles(roles);
         userRepository.save(user);
+        userProfileRepository.save(userProfile);
         return ResponseUtil.build(
                 AppConstant.ResponseCode.SUCCESS,
                 modelMapper.map(user, RegisterResponse.class),

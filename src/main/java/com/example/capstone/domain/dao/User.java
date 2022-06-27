@@ -1,6 +1,8 @@
 package com.example.capstone.domain.dao;
 
 import com.example.capstone.domain.common.BaseDAO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLDelete;
@@ -47,6 +49,10 @@ public class User extends BaseDAO implements UserDetails {
             inverseJoinColumns = {
                     @JoinColumn(name = "ROLE_ID") })
     private Set<Role> roles;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
+    @JsonIgnore
+    private UserProfile userProfile;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
