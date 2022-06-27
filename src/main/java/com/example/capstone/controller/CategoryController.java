@@ -1,9 +1,12 @@
 package com.example.capstone.controller;
 
+import com.example.capstone.domain.dao.Category;
 import com.example.capstone.domain.dto.CategoryDto;
+import com.example.capstone.domain.payload.request.SearchRequest;
 import com.example.capstone.service.CategoryService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

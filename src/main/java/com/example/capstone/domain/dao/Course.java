@@ -34,6 +34,8 @@ public class Course extends BaseDAO {
 
     private String description;
 
+    private double rating;
+
     private String urlBucket;
 
     private String urlImage;
