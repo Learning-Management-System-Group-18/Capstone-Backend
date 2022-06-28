@@ -1,6 +1,11 @@
 package com.example.capstone.domain.dto;
 
+import com.example.capstone.domain.payload.response.CategoryResponse;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,23 +17,24 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class CourseDto {
-    @Schema(type = "long", example = "1", description = "ID Course", hidden = true)
     private Long id;
 
-    @Schema(type = "string", example = "Trust With Java", description = "Nama Course")
     private String title;
 
-    @Schema(type = "double", example = "4.5", description = "Rating Course")
     private double rating;
 
-    @Schema(type = "string", example = "Learning java is good", description = "Deskripsi Course")
     private String description;
 
-    @Schema(type = "String", example = "https://gambarjava", description = "Picture Course")
-    private String thumbnail;
+    @JsonIgnore
+    private String urlBucket;
 
-    @Schema(hidden = true)
-    private CategoryDto category;
+    private String urlImage;
+
+    @JsonIgnore
+    private String imageFileName;
+
+    private CategoryResponse category;
 
 }

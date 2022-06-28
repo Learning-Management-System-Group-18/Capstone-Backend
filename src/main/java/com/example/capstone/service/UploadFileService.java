@@ -23,18 +23,17 @@ import java.util.Optional;
 
 
 @Service
-@AllArgsConstructor
 @Slf4j
 public class UploadFileService {
-
     @Autowired
-    private final AmazonS3 amazonS3;
+    private AmazonS3 amazonS3;
 
     public void upload(String path,
                        String fileName,
                        Optional<Map<String, String>> optionalMetaData,
                        InputStream inputStream){
         ObjectMetadata objectMetadata = new ObjectMetadata();
+        objectMetadata.setContentType("image/png");
         optionalMetaData.ifPresent(map -> {
             if(!map.isEmpty()){
                 map.forEach(objectMetadata::addUserMetadata);

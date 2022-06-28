@@ -77,18 +77,18 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(req.getPassword()));
         Set<Role> roles = new HashSet<>();
 
-//         Temporary code to insert values to Role table, comment on production
-        Optional<Role> roleOptional = roleRepository.findByName(AppConstant.RoleType.ROLE_USER);
-        if(roleOptional.isEmpty()){
-            Role userRole = new Role();
-            userRole.setName(AppConstant.RoleType.ROLE_USER);
-
-            Role adminRole = new Role();
-            adminRole.setName(AppConstant.RoleType.ROLE_ADMIN);
-
-            roleRepository.save(userRole);
-            roleRepository.save(adminRole);
-        }
+//         Temporary code to insert values to Role table, comment on productions
+//        Optional<Role> roleOptional = roleRepository.findByName(AppConstant.RoleType.ROLE_USER);
+//        if(roleOptional.isEmpty()){
+//            Role userRole = new Role();
+//            userRole.setName(AppConstant.RoleType.ROLE_USER);
+//
+//            Role adminRole = new Role();
+//            adminRole.setName(AppConstant.RoleType.ROLE_ADMIN);
+//
+//            roleRepository.save(userRole);
+//            roleRepository.save(adminRole);
+//        }
 //         end of temporary code
 
         roleRepository.findByName(AppConstant.RoleType.ROLE_USER).ifPresent(roles::add);
@@ -115,8 +115,10 @@ public class AuthService {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             Set<String> roles = SecurityContextHolder.getContext().getAuthentication()
                     .getAuthorities().stream().map(r -> r.getAuthority()).collect(Collectors.toSet());
+            User auth = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String jwt = jwtTokenProvider.generateToken(authentication);
             TokenResponse tokenResponse = new TokenResponse();
+            tokenResponse.setFullName(auth.getFullName());
             tokenResponse.setToken(jwt);
             tokenResponse.setRole(roles);
 
@@ -132,9 +134,9 @@ public class AuthService {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return ResponseUtil.build(
-                    AppConstant.ResponseCode.PASSWORD_INCORRECT,
-                    "Password is incorrect",
-                    HttpStatus.BAD_REQUEST
+                    AppConstant.ResponseCode.UNKNOWN_ERROR,
+                    "null",
+                    HttpStatus.INTERNAL_SERVER_ERROR
             );
         }
     }

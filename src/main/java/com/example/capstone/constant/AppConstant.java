@@ -1,7 +1,12 @@
 package com.example.capstone.constant;
 
+
+
 public class AppConstant {
     private AppConstant() {}
+
+    public static final String DATE_JSON_FORMAT = "dd-MM-yyyy";
+    public static final String DATETIME_JSON_FORMAT = "dd-MM-yyyy HH:mm:ss";
 
     public static final String DEFAULT_SYSTEM = "SYSTEM";
     public enum ResponseCode {
@@ -10,6 +15,7 @@ public class AppConstant {
         DATA_NOT_FOUND("DATA_NOT_FOUND", "Data not found!"),
         UNKNOWN_ERROR("UNKNOWN_ERROR", "Happened unknown error!"),
         BAD_CREDENTIALS("BAD_CREDENTIALS", "Provided Credentials is bad!"),
+        NOT_LOGGED_IN("NOT_LOGGED_IN", "Login first to access this endpoint"),
         USER_EXIST("USER_EXIST","User Already Exist"),
         PASSWORD_INCORRECT("PASSWORD_INCORRECT","Password is incorrect");
 
@@ -43,6 +49,7 @@ public class AppConstant {
     public enum Gender {
         MALE, FEMALE
     }
+
 
 
 }

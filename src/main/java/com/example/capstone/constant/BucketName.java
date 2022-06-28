@@ -6,6 +6,6 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum BucketName {
-    CATEGORY_IMAGE("capstone-lms-storage");
+    CONTENT_IMAGE("capstone-lms-storage");
     private final String bucketName;
 }
