@@ -11,13 +11,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 
 @RestController
 @RequestMapping("/")
-@CrossOrigin
 public class CourseController {
     @Autowired
     private CourseService courseService;
@@ -35,17 +33,13 @@ public class CourseController {
     }
 
     @GetMapping("/course")
-    public ResponseEntity<Object> getOneCourse(@RequestParam(value = "id") Long id) {
-        return courseService.getCourseById(id);
+    public ResponseEntity<Object> getAllCourses() {
+        return courseService.getAll();
     }
 
-    @PostMapping(
-            path = "/admin/course",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> createNewCourse(@RequestParam(value = "categoryId") Long categoryId,
-                                                  @ModelAttribute CourseDto request,
-                                                  @RequestPart(value = "image") MultipartFile file){
-        return courseService.createNewCourse(categoryId,request,file);
+    @PostMapping("/admin/course")
+    public ResponseEntity<Object> createNewCourse(@RequestParam(value = "categoryId")Long categoryId,
+                                                  @RequestBody CourseDto request){
+        return courseService.createNewCourse(categoryId,request);
     }
 }

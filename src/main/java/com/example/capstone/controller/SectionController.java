@@ -9,28 +9,13 @@ import com.example.capstone.service.SectionService;
 
 @RestController
 @RequestMapping("/")
-@CrossOrigin
 public class SectionController {
     @Autowired
     private SectionService sectionService;
 
-    @GetMapping("/content")
-    public ResponseEntity<Object> getAllContentBySectionId(@RequestParam(value = "sectionId") Long sectionId,
-                                                          @RequestParam("page") int page,
-                                                          @RequestParam("size") int size){
-        return sectionService.getAllContentBySectionId(sectionId,page,size);
-    }
-
-    @GetMapping("/sections")
-    public ResponseEntity<Object> getAllSectionByCourseId(@RequestParam(value = "courseId") Long courseId,
-                                                @RequestParam("page") int page,
-                                                @RequestParam("size") int size){
-        return sectionService.getAllSectionByCourseId(courseId,page,size);
-    }
-
     @GetMapping("/section")
-    public ResponseEntity<Object> getOneSection(@RequestParam(value = "id") Long id) {
-        return sectionService.getSectionById(id);
+    public ResponseEntity<Object> getAllSection(){
+        return sectionService.getAllSection();
     }
 
     @PostMapping("/admin/section")
@@ -38,6 +23,15 @@ public class SectionController {
                                                     @RequestBody SectionDto request){
         return sectionService.createNewSection(courseId,request);
     }
+
+
+    @PutMapping("/admin/section")
+    public ResponseEntity<Object> updateSection(@RequestParam(value = "sectionId") Long sectionId,
+                                                @RequestBody SectionDto request){
+        return sectionService.updateSection(sectionId, request);
+    }
+
+
 
     @DeleteMapping("/admin/section")
     public ResponseEntity<Object> deleteSection(@RequestParam(value = "id") Long id){

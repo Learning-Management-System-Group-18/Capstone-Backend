@@ -4,8 +4,11 @@ import com.example.capstone.domain.dao.Category;
 import com.example.capstone.domain.dto.CategoryDto;
 import com.example.capstone.domain.payload.request.SearchRequest;
 import com.example.capstone.service.CategoryService;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,19 +28,13 @@ public class CategoryController {
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> createNewCategory(@ModelAttribute CategoryDto request,
-                                                    @RequestPart(value = "image")MultipartFile file){
-        return categoryService.createNewCategory(request,file);
-    }
-
-    @GetMapping("/categories")
-    public ResponseEntity<Object> getAllCategory(@RequestParam ("page") int page,
-                                                 @RequestParam ("size") int size) {
-        return categoryService.getAllCategory(page,size);
+                                                    @RequestParam("file")MultipartFile file){
+        return categoryService.addNew(request,file);
     }
 
     @GetMapping("/category")
-    public ResponseEntity<Object> getOneCategory(@RequestParam(value = "id") Long id){
-        return categoryService.getCategoryById(id);
+    public ResponseEntity<Object> getAllCategory() {
+        return categoryService.getAll();
     }
 
     @GetMapping(value = "/category/{id}/image", produces = MediaType.IMAGE_PNG_VALUE)

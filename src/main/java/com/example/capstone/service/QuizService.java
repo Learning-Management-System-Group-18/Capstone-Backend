@@ -4,14 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.example.capstone.domain.dao.Slide;
-import com.example.capstone.domain.dto.SlideDto;
-import com.example.capstone.domain.dto.VideoDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -37,39 +31,18 @@ public class QuizService {
     @Autowired
     private QuizRepository quizRepository;
 
-    public ResponseEntity<Object> getAllQuizBySectionId(Long sectionId, int page, int size) {
+    public ResponseEntity<Object> getAllQuiz() {
         log.info("Executing get all quiz");
         try {
-            Pageable pageable = PageRequest.of(page-1,size);
-            Page<Quiz> quizzes = quizRepository.findAllBySectionId(sectionId,pageable);
-
-            List<QuizDto> request = new ArrayList<>();
-            for (Quiz quiz: quizzes){
-                QuizDto quizDto = mapper.map(quiz, QuizDto.class);
-                request.add(quizDto);
+            List<Quiz> quizList = quizRepository.findAll();
+            List<QuizDto> quizDtoList = new ArrayList<>();
+            for (Quiz quiz: quizList){
+                quizDtoList.add(mapper.map(quiz, QuizDto.class));
             }
             log.info("Successfully retrieved all quiz");
-            return ResponseUtil.build(ResponseCode.SUCCESS, request, HttpStatus.OK);
+            return ResponseUtil.build(ResponseCode.SUCCESS, quizDtoList, HttpStatus.OK);
         } catch (Exception e){
             log.error("An error occurred while trying to get all quiz. Error : {}", e.getMessage());
-            return ResponseUtil.build(ResponseCode.UNKNOWN_ERROR, null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    public ResponseEntity<Object> getQuizById(Long id) {
-        log.info("Executing get Quiz with ID : {}", id);
-        try {
-            Optional<Quiz> quiz = quizRepository.findById(id);
-            if (quiz.isEmpty()) {
-                log.info("Quiz with ID [{}] not found", id);
-                return ResponseUtil.build(ResponseCode.DATA_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
-            }
-
-            QuizDto request = mapper.map(quiz, QuizDto.class);
-            log.info("Successfully retrieved Quiz with ID : {}", id);
-            return ResponseUtil.build(ResponseCode.SUCCESS, request, HttpStatus.OK);
-        } catch (Exception e) {
-            log.error("An error occurred while trying to get Quiz with ID : {}. Error : {}", id, e.getMessage());
             return ResponseUtil.build(ResponseCode.UNKNOWN_ERROR, null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -86,6 +59,48 @@ public class QuizService {
             return ResponseUtil.build(ResponseCode.SUCCESS, mapper.map(quiz, QuizDto.class), HttpStatus.OK);
         } catch (Exception e){
             log.error("An Error occurred while trying to add new quiz. Error:{}",e.getMessage());
+            return ResponseUtil.build(ResponseCode.UNKNOWN_ERROR, null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<Object> updateQuiz(Long quizId, QuizDto request){
+        log.info("Executing update quiz");
+        try {
+            Optional<Quiz> optionalQuiz = quizRepository.findById(quizId);
+            if (optionalQuiz.isEmpty()) {
+                log.info("Quiz with Id [{}] not found", quizId);
+                return ResponseUtil.build(ResponseCode.DATA_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
+            }
+            Optional<Section> section = sectionRepository.findById(optionalQuiz.get().getSection().getId());
+            optionalQuiz.ifPresent(quiz -> {
+                quiz.setId(quizId);
+                quiz.setTitle(request.getTitle());
+                quiz.setDescription(request.getDescription());
+                quiz.setLink(request.getLink());
+                quiz.setSection(section.get());;
+                quizRepository.save(quiz);
+            });
+            log.info("Successfully update quiz");
+            return ResponseUtil.build(ResponseCode.SUCCESS, mapper.map(optionalQuiz.get(), QuizDto.class), HttpStatus.OK);
+        } catch (Exception e){
+            log.error("An Error occurred while trying to updated quiz. Error:{}",e.getMessage());
+            return ResponseUtil.build(ResponseCode.UNKNOWN_ERROR, null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<Object> deleteById(Long id){
+        log.info("Executing delete existing quiz");
+        try {
+            Optional<Quiz> optionalQuiz = quizRepository.findById(id);
+            if (optionalQuiz.isEmpty()){
+                log.info("Quiz with Id : [{}] is not found",id);
+                return ResponseUtil.build(ResponseCode.DATA_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
+            }
+            quizRepository.delete(optionalQuiz.get());
+            log.info("Successfully delete quiz with ID : [{}]", id);
+            return ResponseUtil.build(ResponseCode.SUCCESS, null, HttpStatus.OK);
+        } catch (Exception e){
+            log.info("An error occurred while trying to delete existing quiz. Error : {}",e.getMessage());
             return ResponseUtil.build(ResponseCode.UNKNOWN_ERROR, null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

@@ -46,7 +46,12 @@ public class Section extends BaseDAO{
     private List<Slide> slides;
 
     @JsonIgnore
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "section")
+    private List<Quiz> quizs;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "section",orphanRemoval = true)
     private List<Quiz> quizzes;
+
 
 }

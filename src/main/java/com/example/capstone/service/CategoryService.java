@@ -7,17 +7,11 @@ import com.example.capstone.domain.dao.Category;
 import com.example.capstone.domain.dto.CategoryDto;
 import com.example.capstone.domain.payload.request.SearchRequest;
 import com.example.capstone.repository.CategoryRepository;
-import com.example.capstone.repository.CourseRepository;
 import com.example.capstone.util.ResponseUtil;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -32,10 +26,10 @@ import static org.apache.http.entity.ContentType.IMAGE_JPEG;
 
 @Service
 @Slf4j
+@AllArgsConstructor
 public class CategoryService {
 
-    @Autowired
-    private  UploadFileService uploadFileService;
+    private final UploadFileService uploadFileService;
 
     @Autowired
     private CategoryRepository categoryRepository;
@@ -43,56 +37,32 @@ public class CategoryService {
     @Autowired
     private ModelMapper mapper;
 
+
+    public ResponseEntity<Object> getAll() {
+
     @Autowired
     private CourseRepository courseRepository;
 
 
     public ResponseEntity<Object> getAllCategory(int page, int size) {
+
         log.info("Executing get all category");
         try {
-            Pageable pageable = PageRequest.of(page-1,size);
-
-            Page<Category> categoryList = categoryRepository.findAll(pageable);
-
-            List<CategoryDto> request = new ArrayList<>();
-
-            for (Category category: categoryList){
-                Integer countCourse = courseRepository.countCourseByCategoryId(category.getId());
-                CategoryDto categoryDto = mapper.map(category, CategoryDto.class);
-                categoryDto.setCountCourse(countCourse);
-                request.add(categoryDto);
+            List<Category> categories = categoryRepository.findAll();
+            List<CategoryDto> categoryDtos = new ArrayList<>();
+            for (Category category: categories){
+                categoryDtos.add(mapper.map(category, CategoryDto.class));
             }
 
             log.info("Successfully retrieved all Category");
-            return ResponseUtil.build(ResponseCode.SUCCESS, request ,HttpStatus.OK);
+            return ResponseUtil.build(ResponseCode.SUCCESS, categoryDtos,HttpStatus.OK);
         } catch (Exception e){
             log.error("An error occurred while trying to get all Category. Error : {}",e.getMessage());
             return ResponseUtil.build(ResponseCode.UNKNOWN_ERROR,null,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    public ResponseEntity<Object> getCategoryById(Long id) {
-        log.info("Executing get Category with ID : {}", id);
-        try {
-            Optional<Category> category = categoryRepository.findById(id);
-            if (category.isEmpty()) {
-                log.info("category with ID [{}] not found", id);
-                return ResponseUtil.build(ResponseCode.DATA_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
-            }
-            Integer countCourse = courseRepository.countCourseByCategoryId(id);
-            CategoryDto request = mapper.map(category, CategoryDto.class);
-            request.setCountCourse(countCourse);
-
-            log.info("Successfully retrieved Category with ID : {}", id);
-            return ResponseUtil.build(ResponseCode.SUCCESS,request,HttpStatus.OK);
-        } catch (Exception e ) {
-            log.error("An error occurred while trying to get category with ID : {}. Error : {}", id, e.getMessage());
-            return ResponseUtil.build(ResponseCode.UNKNOWN_ERROR,null,HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-    }
-
-    public ResponseEntity<Object> createNewCategory(CategoryDto request, MultipartFile file) {
+    public ResponseEntity<Object> addNew(CategoryDto request, MultipartFile file) {
         log.info("Executing add new category");
         if (categoryRepository.existsByTitle(request.getTitle())) {
             log.info("Category with name : {} already exist", request.getTitle());
@@ -106,7 +76,6 @@ public class CategoryService {
             if (file.isEmpty()) {
                 throw new IllegalStateException("Cannot upload empty file");
             }
-
             //check if the file is an image
             if (!Arrays.asList(IMAGE_PNG.getMimeType(),
                     IMAGE_BMP.getMimeType(),
@@ -123,18 +92,17 @@ public class CategoryService {
             //save image in s3
             String pattern = "https://capstone-lms-storage.s3.amazonaws.com";
             String uuid = UUID.randomUUID().toString().replace("-","");
-            String urlBucket = String.format("%s/%s/%s", BucketName.CONTENT_IMAGE.getBucketName(), "category-images", uuid);
+            String path = String.format("%s/%s/%s", BucketName.CATEGORY_IMAGE.getBucketName(), "category-images", uuid);
             String fileName = String.format("%s", file.getOriginalFilename());
-            String urlImage = String.format("%s/%s/%s/%s",pattern,"category-images",uuid,fileName);
-            uploadFileService.upload(urlBucket, fileName, Optional.of(metadata), file.getInputStream());
+            String path2 = String.format("%s/%s/%s/%s",pattern,"category-images",uuid,fileName);
+            uploadFileService.upload(path, fileName, Optional.of(metadata), file.getInputStream());
 
             //and then save category in database
             Category category = mapper.map(request, Category.class);
             category.setImageFileName(fileName);
-            category.setUrlBucket(urlBucket);
-            category.setUrlImage(urlImage);
+            category.setUrlBucket(path);
+            category.setUrlImage(path2);
             categoryRepository.save(category);
-
 
             log.info("Successfully added new category");
             return ResponseUtil.build(ResponseCode.SUCCESS, mapper.map(category, CategoryDto.class), HttpStatus.OK);
@@ -181,21 +149,22 @@ public class CategoryService {
             //save image in s3
             String pattern = "https://capstone-lms-storage.s3.amazonaws.com";
             String uuid = UUID.randomUUID().toString().replace("-","");
-            String urlBucket = String.format("%s/%s/%s", BucketName.CONTENT_IMAGE.getBucketName(), "category-images", uuid);
+            String path = String.format("%s/%s/%s", BucketName.CATEGORY_IMAGE.getBucketName(), "category-images", uuid);
             String fileName = String.format("%s", file.getOriginalFilename());
-            String urlImage = String.format("%s/%s/%s/%s",pattern,"category-images",uuid,fileName);
-            uploadFileService.upload(urlBucket, fileName, Optional.of(metadata), file.getInputStream());
+            String path2 = String.format("%s/%s/%s/%s",pattern,"category-images",uuid,fileName);
+            uploadFileService.upload(path, fileName, Optional.of(metadata), file.getInputStream());
 
             optionalCategory.ifPresent(category -> {
                 category.setId(id);
                 category.setTitle(request.getTitle());
                 category.setDescription(request.getDescription());
-                category.setUrlBucket(urlBucket);
-                category.setUrlImage(urlImage);
+                category.setUrlBucket(path);
+                category.setUrlImage(path2);
                 category.setImageFileName(fileName);
                 categoryRepository.save(category);
-
             });
+
+
 
             log.info("Succesfully updated category with Id : [{}]",id);
             return ResponseUtil.build(ResponseCode.SUCCESS,mapper.map(optionalCategory.get(),CategoryDto.class),HttpStatus.OK);

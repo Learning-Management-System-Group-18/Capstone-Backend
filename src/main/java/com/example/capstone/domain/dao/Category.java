@@ -4,12 +4,10 @@ import com.example.capstone.domain.common.BaseDAO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
@@ -30,15 +28,12 @@ public class Category extends BaseDAO {
 
     private String description;
 
+    @JsonIgnore
     private String urlBucket;
 
     private String urlImage;
 
     private String imageFileName;
-
-    private Integer countUser;
-
-    private Integer countCourse ;
 
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "category", orphanRemoval = true)

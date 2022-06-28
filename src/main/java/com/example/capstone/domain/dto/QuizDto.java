@@ -1,10 +1,7 @@
 package com.example.capstone.domain.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,16 +13,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class QuizDto {
+    @Schema(type = "long", example = "1", description = "Id Quiz", hidden = true)
     private Long id;
 
+    @Schema(type = "string", example = "Quiz Intrdouce java", description = "Title Quiz")
     private String title;
 
+    @Schema(type = "string", example = "Description quiz introduce java", description = "Description Quiz")
     private String description;
 
+    @Schema(type = "string", example = "docs.google.com/forms/", description = "Link Quiz")
     private String link;
 
-    @JsonIgnore
+    @Schema(hidden = true)
     private SectionDto section;
 }
