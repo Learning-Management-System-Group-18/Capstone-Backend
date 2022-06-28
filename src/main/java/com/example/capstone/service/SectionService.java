@@ -64,6 +64,7 @@ public class SectionService {
         }
     }
 
+
     public ResponseEntity<Object> updateSection(Long sectionId, SectionDto request){
         log.info("Executing update section");
         try {
@@ -100,6 +101,21 @@ public class SectionService {
             return ResponseUtil.build(ResponseCode.SUCCESS,null,HttpStatus.OK);
         } catch (Exception e){
             log.info("An error occurred while trying to delete existing section. Error : {}",e.getMessage());
+            
+    public ResponseEntity<Object> deleteById(Long id){
+        log.info("Executing delete existing Section");
+        try {
+            Optional<Section> optionalSection = sectionRepository.findById(id);
+            if (optionalSection.isEmpty()) {
+                log.info("Section with ID : [{}] is not found", id);
+                return ResponseUtil.build(ResponseCode.DATA_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
+            }
+            sectionRepository.delete(optionalSection.get());
+            log.info("Successfully deleted Section with ID : [{}]", id);
+            return ResponseUtil.build(ResponseCode.SUCCESS, null, HttpStatus.OK);
+        } catch (Exception e) {
+            log.info("An error occurred while trying to delete existing section. Error : {}", e.getMessage());
+
             return ResponseUtil.build(ResponseCode.UNKNOWN_ERROR, null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

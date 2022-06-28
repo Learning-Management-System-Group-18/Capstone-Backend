@@ -35,4 +35,14 @@ public class AppConstant {
         ROLE_USER,
         ROLE_ADMIN
     }
+
+    public enum Level {
+        BEGINNER, INTERMEDIATE, ADVANCED
+    }
+
+    public enum Gender {
+        MALE, FEMALE
+    }
+
+
 }

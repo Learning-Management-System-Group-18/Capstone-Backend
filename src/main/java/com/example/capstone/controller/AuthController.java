@@ -30,9 +30,4 @@ public class AuthController {
         return authService.generateToken(req);
     }
 
-    @GetMapping("/admin/test")
-    public ResponseEntity<Object> dashboardAdmin() {
-        return ResponseEntity.ok("This is admin");
-    }
-
 }

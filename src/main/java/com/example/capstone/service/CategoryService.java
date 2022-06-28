@@ -2,8 +2,10 @@ package com.example.capstone.service;
 
 import com.example.capstone.constant.AppConstant;
 import com.example.capstone.constant.AppConstant.*;
+import com.example.capstone.domain.common.SearchSpecification;
 import com.example.capstone.domain.dao.Category;
 import com.example.capstone.domain.dto.CategoryDto;
+import com.example.capstone.domain.payload.request.SearchRequest;
 import com.example.capstone.repository.CategoryRepository;
 import com.example.capstone.util.ResponseUtil;
 import lombok.AllArgsConstructor;
@@ -35,7 +37,15 @@ public class CategoryService {
     @Autowired
     private ModelMapper mapper;
 
+
     public ResponseEntity<Object> getAll() {
+
+    @Autowired
+    private CourseRepository courseRepository;
+
+
+    public ResponseEntity<Object> getAllCategory(int page, int size) {
+
         log.info("Executing get all category");
         try {
             List<Category> categories = categoryRepository.findAll();

@@ -36,6 +36,6 @@ public class Category extends BaseDAO {
     private String imageFileName;
 
     @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "category")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "category", orphanRemoval = true)
     private List<Course> courses;
 }
