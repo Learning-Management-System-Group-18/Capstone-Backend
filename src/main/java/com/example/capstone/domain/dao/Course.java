@@ -32,9 +32,6 @@ public class Course extends BaseDAO {
 
     private String title;
 
-
-    private double rating;
-
     private String description;
 
     private double rating;
@@ -43,11 +40,9 @@ public class Course extends BaseDAO {
 
     private String urlImage;
 
-    private String description;
+    private String imageFileName;
 
-   
-
-
+    private Long countCourse;
 
     @ManyToOne
     @JoinColumn(name = "category_id")
@@ -68,5 +63,4 @@ public class Course extends BaseDAO {
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "course", orphanRemoval = true)
     private List<Review> reviews;
-
 }

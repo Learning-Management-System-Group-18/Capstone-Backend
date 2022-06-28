@@ -2,36 +2,41 @@ package com.example.capstone.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class CategoryDto {
-    @Schema(type = "long", example = "1", description = "ID Category", hidden = true)
     private Long id;
 
-    @Schema(type = "string", example = "Android Developer", description = "nama category")
     private String title;
 
-    @Schema(type = "string", example = "Android Developer adalah course yang mempelajari", description = "description category")
     private String description;
 
-    @Schema(hidden = true)
     @JsonIgnore
     private String urlBucket;
 
-    @Schema(hidden = true)
     private String urlImage;
 
-    @Schema(hidden = true)
+    @JsonIgnore
     private String imageFileName;
 
+    @ColumnDefault("0")
+    private Integer countCourse = 0;
+
+    @ColumnDefault("0")
+    private Integer countUser = 0;
 
 }

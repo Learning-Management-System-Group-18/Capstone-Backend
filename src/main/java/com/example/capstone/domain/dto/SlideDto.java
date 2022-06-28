@@ -1,7 +1,10 @@
 package com.example.capstone.domain.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,19 +16,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class SlideDto {
-    @Schema(type = "long", example = "1", description = "Id Slide", hidden = true)
     private Long id;
 
-    @Schema(type = "string", example = "Slide Intrdouce java", description = "Title Slide")
     private String title;
 
-    @Schema(type = "string", example = "Description slide introduce java", description = "Description Slide")
     private String description;
 
-    @Schema(type = "string", example = "docs.google.com/presentation", description = "Link Slide")
     private String link;
 
-    @Schema(hidden = true)
+    @JsonIgnore
     private SectionDto section;
 }
