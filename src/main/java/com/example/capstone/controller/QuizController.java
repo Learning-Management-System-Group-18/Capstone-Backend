@@ -31,4 +31,15 @@ public class QuizController {
                                                     @RequestBody QuizDto request){
         return quizService.createNewQuiz(sectionId, request);
     }
+
+    @PutMapping("/admin/quiz")
+    public ResponseEntity<Object> updateQuiz(@RequestParam(value = "id") Long id,
+                                             @RequestBody QuizDto request){
+        return quizService.updateQuiz(id, request);
+    }
+
+    @DeleteMapping("/admin/quiz")
+    public ResponseEntity<Object> deleteQuiz(@RequestParam(value = "id") Long id){
+        return quizService.deleteById(id);
+    }
 }

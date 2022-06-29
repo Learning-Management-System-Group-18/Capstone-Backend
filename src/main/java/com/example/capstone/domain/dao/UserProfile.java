@@ -1,11 +1,8 @@
 package com.example.capstone.domain.dao;
 
 
-import com.example.capstone.constant.AppConstant;
 import com.example.capstone.constant.AppConstant.*;
 import com.example.capstone.domain.common.BaseDAO;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -16,8 +13,6 @@ import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -46,7 +41,7 @@ public class UserProfile extends BaseDAO {
 
     private String status;
 
-    private String Address;
+    private String address;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

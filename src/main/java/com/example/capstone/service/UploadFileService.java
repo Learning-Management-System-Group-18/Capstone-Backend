@@ -46,23 +46,7 @@ public class UploadFileService {
         }
     }
 
-
-    public ResponseEntity<Object> download(String path, String filename){
-        log.info("Sending file with name {}",filename);
-        try {
-            S3Object object = amazonS3.getObject(path, filename);
-            S3ObjectInputStream objectContent = object.getObjectContent();
-            byte[] imageByte = IOUtils.toByteArray(objectContent);
-            return ResponseEntity.ok().body(imageByte);
-
-        } catch (AmazonServiceException | IOException e) {
-            log.error("Error occurred while trying to create resource URL. Error : {}",e.getMessage());
-            return ResponseUtil.build(AppConstant.ResponseCode.DATA_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
-        }
-    }
-
     public void delete(String path, String fileName){
-        log.info("Executing delete directory image");
         amazonS3.deleteObject(path,fileName);
     }
 }

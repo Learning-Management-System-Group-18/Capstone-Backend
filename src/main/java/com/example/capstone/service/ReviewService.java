@@ -1,10 +1,13 @@
 package com.example.capstone.service;
 
 import com.example.capstone.constant.AppConstant;
+import com.example.capstone.domain.common.SearchSpecification;
 import com.example.capstone.domain.dao.Course;
 import com.example.capstone.domain.dao.Review;
 import com.example.capstone.domain.dao.User;
+import com.example.capstone.domain.dto.CourseDto;
 import com.example.capstone.domain.dto.ReviewDto;
+import com.example.capstone.domain.payload.request.SearchRequest;
 import com.example.capstone.repository.CourseRepository;
 import com.example.capstone.repository.ReviewRepository;
 import com.example.capstone.repository.UserRepository;
@@ -22,6 +25,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -39,6 +43,26 @@ public class ReviewService {
 
     @Autowired
     private UserRepository userRepository;
+
+    public ResponseEntity<Object> searchReview(SearchRequest request){
+        try {
+            SearchSpecification<Review> specification = new SearchSpecification<>(request);
+            Pageable pageable = SearchSpecification.getPageable(request.getPage()-1, request.getSize() );
+            Page<Review> reviews = reviewRepository.findAll(specification,pageable);
+            List<ReviewDto> reviewDtoList = new ArrayList<>();
+
+            for (Review review: reviews){
+                ReviewDto reviewDto = mapper.map(review, ReviewDto.class);
+                reviewDtoList.add(reviewDto);
+            }
+            log.info("Successfully retrieved all review by specification");
+            return ResponseUtil.build(AppConstant.ResponseCode.SUCCESS, reviewDtoList, HttpStatus.OK);
+        } catch (Exception e){
+            log.error("An error occurred while trying to get all review. Error : {}", e.getMessage());
+            return ResponseUtil.build(AppConstant.ResponseCode.UNKNOWN_ERROR, null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
     public ResponseEntity<Object> getReviewByCourseId(Long courseId, int page, int size) {
         log.info("Executing get all Review by Course ID [{}]", courseId);

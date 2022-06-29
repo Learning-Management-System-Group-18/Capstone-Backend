@@ -2,7 +2,6 @@ package com.example.capstone.service;
 
 import com.example.capstone.constant.AppConstant;
 import com.example.capstone.constant.BucketName;
-import com.example.capstone.domain.dao.Category;
 import com.example.capstone.domain.dao.Course;
 import com.example.capstone.domain.dao.Mentor;
 import com.example.capstone.domain.dto.MentorDto;
@@ -98,6 +97,61 @@ public class MentorService {
         } catch (Exception e) {
             log.error("An error occurred while trying to add new mentor. Error : {}", e.getMessage());
             return ResponseUtil.build(AppConstant.ResponseCode.UNKNOWN_ERROR, null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<Object> updateById(Long id, MentorDto request, MultipartFile file) {
+        log.info("Executing update mentor with Id [{}]", id);
+        try {
+            Optional<Mentor> optionalMentor = mentorRepository.findById(id);
+            if (optionalMentor.isEmpty()){
+                log.info("Mentor with Id [{}] not found",id);
+                return ResponseUtil.build(AppConstant.ResponseCode.DATA_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
+            }
+            if (file == null) {
+                log.info("File is null, update mentor without file");
+                optionalMentor.ifPresent(mentor -> {
+                    mentor.setId(id);
+                    mentor.setName(request.getName());
+                    mentorRepository.save(mentor);
+                });
+
+                log.info("Successfully updated mentor without image with Id : [{}]",id);
+            } else {
+                log.info("File is not null, updated mentor with file");
+
+                // delete path old
+                Mentor oldMentor = mentorRepository.findById(id).get();
+                uploadFileService.delete(oldMentor.getUrlBucket(),oldMentor.getImageFileName());
+
+                //get file metadata
+                Map<String, String> metadata = new HashMap<>();
+                metadata.put("Content-Type", file.getContentType());
+                metadata.put("Content-Length", String.valueOf(file.getSize()));
+
+                //save image in s3
+                String pattern = "https://capstone-lms-storage.s3.amazonaws.com";
+                String uuid = UUID.randomUUID().toString().replace("-","");
+                String urlBucket = String.format("%s/%s/%s", BucketName.CONTENT_IMAGE.getBucketName(), "mentor-images", uuid);
+                String fileName = String.format("%s", file.getOriginalFilename());
+                String urlImage = String.format("%s/%s/%s/%s",pattern,"mentor-images",uuid,fileName);
+                uploadFileService.upload(urlBucket, fileName, Optional.of(metadata), file.getInputStream());
+
+                optionalMentor.ifPresent(mentor -> {
+                    mentor.setId(id);
+                    mentor.setName(request.getName());
+                    mentor.setUrlBucket(urlBucket);
+                    mentor.setUrlImage(urlImage);
+                    mentor.setImageFileName(fileName);
+                    mentorRepository.save(mentor);
+                });
+
+                log.info("Successfully update mentor with Image with Id : [{}]",id);
+            }
+            return ResponseUtil.build(AppConstant.ResponseCode.SUCCESS,mapper.map(optionalMentor.get(), MentorDto.class),HttpStatus.OK);
+        } catch (Exception e) {
+            log.info("An error occurred while trying to update existing Mentor. Error : {}", e.getMessage());
+            return ResponseUtil.build(AppConstant.ResponseCode.UNKNOWN_ERROR,null,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
