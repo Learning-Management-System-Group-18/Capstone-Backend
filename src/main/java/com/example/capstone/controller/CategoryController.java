@@ -40,16 +40,12 @@ public class CategoryController {
         return categoryService.getCategoryById(id);
     }
 
-    @GetMapping(value = "/category/{id}/image", produces = MediaType.IMAGE_PNG_VALUE)
-    public ResponseEntity<Object> showImage(@PathVariable Long id){
-        return categoryService.showImage(id);
-    }
-
     @PutMapping( path = "/admin/category",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> updateCategory(@RequestParam(value = "id") Long id, @ModelAttribute CategoryDto request,
-                                                 @RequestParam("file") MultipartFile file){
+    public ResponseEntity<Object> updateCategory(@RequestParam(value = "id") Long id,
+                                                 @ModelAttribute CategoryDto request,
+                                                 @RequestParam(value = "image", required = false) MultipartFile file){
         return categoryService.updateById(id,request,file);
     }
 

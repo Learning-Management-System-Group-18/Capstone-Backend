@@ -57,6 +57,7 @@ public class OrderService {
                         null,
                         HttpStatus.BAD_REQUEST);
             }
+
             OrderDto request = new OrderDto();
             Order order = mapper.map(request, Order.class);
             String orderId = RandomStringUtils.randomNumeric(5);

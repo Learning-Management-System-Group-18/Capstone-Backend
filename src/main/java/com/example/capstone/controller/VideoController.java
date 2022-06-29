@@ -31,4 +31,15 @@ public class VideoController {
                                                     @RequestBody VideoDto request){
         return videoService.createNewVideo(sectionId,request);
     }
+
+    @PutMapping("/admin/video")
+    public ResponseEntity<Object> updateVideo(@RequestParam(value = "id") Long id,
+                                              @RequestBody VideoDto request){
+        return videoService.updateVideo(id, request);
+    }
+
+    @DeleteMapping("/admin/video")
+    public ResponseEntity<Object> deleteVideo(@RequestParam(value = "id") Long id){
+        return videoService.deleteById(id);
+    }
 }

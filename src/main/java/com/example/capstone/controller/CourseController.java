@@ -48,4 +48,25 @@ public class CourseController {
                                                   @RequestPart(value = "image") MultipartFile file){
         return courseService.createNewCourse(categoryId,request,file);
     }
+
+    @PutMapping( path = "/admin/course")
+    public ResponseEntity<Object> updateCourse(@RequestParam(value = "id") Long id,
+                                               @RequestBody CourseDto request){
+        return courseService.updateCourse(id,request);
+
+    }
+
+    @PutMapping( path = "/admin/course/image",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> updateImageCourse(@RequestParam(value = "id") Long id,
+                                                    @RequestParam("file") MultipartFile file){
+        return courseService.updateImageCourse(id,file);
+
+    }
+
+    @DeleteMapping("/admin/course")
+    public ResponseEntity<Object> deleteCourse(@RequestParam(value = "id") Long id){
+        return courseService.deleteById(id);
+    }
 }

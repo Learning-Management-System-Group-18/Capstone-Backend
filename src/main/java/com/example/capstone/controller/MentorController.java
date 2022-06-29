@@ -2,6 +2,7 @@ package com.example.capstone.controller;
 
 import com.example.capstone.domain.dto.CourseDto;
 import com.example.capstone.domain.dto.MentorDto;
+import com.example.capstone.domain.dto.ToolDto;
 import com.example.capstone.service.MentorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -29,5 +30,15 @@ public class MentorController {
                                                   @ModelAttribute MentorDto request,
                                                   @RequestPart(value = "image") MultipartFile file){
         return mentorService.createNewMentor(courseId,request,file);
+    }
+
+    @PutMapping(
+            path = "/admin/mentor",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> updateTool(@RequestParam(value = "id") Long id,
+                                             @ModelAttribute MentorDto request,
+                                             @RequestParam(value = "image", required = false) MultipartFile file ){
+        return mentorService.updateById(id,request,file);
     }
 }

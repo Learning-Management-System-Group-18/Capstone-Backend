@@ -31,4 +31,14 @@ public class ToolController {
                                                   @RequestPart(value = "image") MultipartFile file){
         return toolService.createNewTool(courseId,request,file);
     }
+
+    @PutMapping(
+            path = "/admin/tool",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> updateTool(@RequestParam(value = "id") Long id,
+                                             @ModelAttribute ToolDto request,
+                                             @RequestParam(value = "image", required = false) MultipartFile file ){
+        return toolService.updateById(id,request,file);
+    }
 }

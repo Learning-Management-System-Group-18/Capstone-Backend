@@ -31,4 +31,15 @@ public class SlideController {
                                                     @RequestBody SlideDto request){
         return slideService.createNewSlide(sectionId,request);
     }
+
+    @PutMapping("/admin/slide")
+    public ResponseEntity<Object> updateSlide(@RequestParam(value = "id") Long id,
+                                              @RequestBody SlideDto request){
+        return slideService.updateSlide(id, request);
+    }
+
+    @DeleteMapping("/admin/slide")
+    public ResponseEntity<Object> deleteSlide(@RequestParam(value = "id") Long id){
+        return slideService.deleteById(id);
+    }
 }
