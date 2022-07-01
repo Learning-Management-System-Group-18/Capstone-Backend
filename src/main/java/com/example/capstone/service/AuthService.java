@@ -91,7 +91,7 @@ public class AuthService {
 //        }
 //         end of temporary code
 
-        roleRepository.findByName(AppConstant.RoleType.ROLE_ADMIN).ifPresent(roles::add);
+        roleRepository.findByName(AppConstant.RoleType.ROLE_USER).ifPresent(roles::add);
 
         user.setRoles(roles);
         userRepository.save(user);
