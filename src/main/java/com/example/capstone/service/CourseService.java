@@ -75,17 +75,44 @@ public class CourseService {
         }
     }
 
-    public ResponseEntity<Object> getAllCourse(Long categoryId, int page, int size) {
-        log.info("Executing get all course");
+    public ResponseEntity<Object> getCourse(Long categoryId, Integer page, Integer size) {
+        log.info("Executing get all course with pagination");
         try {
             Pageable pageable = PageRequest.of(page-1,size);
             Page<Course> courseList;
             if (categoryId == null ) {
-                log.info("Category Id is null. Getting all course");
+                log.info("Category Id is null. Getting all course with pagination");
                 courseList = courseRepository.findAll(pageable);
             } else {
-                log.info("Category Id is not null. Getting all course with category Id : {}", categoryId);
+                log.info("Category Id is not null. Getting all course with category Id and pagination: {}", categoryId);
                 courseList = courseRepository.findAllByCategoryId(categoryId,pageable);
+            }
+
+            List<CourseDto> request = new ArrayList<>();
+            for (Course course: courseList){
+                Double rating = reviewRepository.averageOfCourseReviewRating(course.getId());
+                CourseDto courseDto = mapper.map(course, CourseDto.class);
+                courseDto.setRating(Objects.requireNonNullElse(rating,0.0));
+                request.add(courseDto);
+            }
+            log.info("Successfully retrieved all course with pagination");
+            return ResponseUtil.build(ResponseCode.SUCCESS, request, HttpStatus.OK);
+        } catch (Exception e){
+            log.error("An error occurred while trying to get all course. Error : {}", e.getMessage());
+            return ResponseUtil.build(ResponseCode.UNKNOWN_ERROR, null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<Object> getAllCourse(Long categoryId) {
+        log.info("Executing get all course");
+        try {
+            List<Course> courseList;
+            if (categoryId == null ) {
+                log.info("Category Id is null. Getting all course");
+                courseList = courseRepository.findAll();
+            } else {
+                log.info("Category Id is not null. Getting all course with category Id : {}", categoryId);
+                courseList = courseRepository.findAllByCategoryId(categoryId);
             }
 
             List<CourseDto> request = new ArrayList<>();
@@ -123,52 +150,16 @@ public class CourseService {
         }
 
     }
-
-    public ResponseEntity<Object> createNewCourse(Long categoryId, CourseDto request, MultipartFile file){
-        log.info("Executing add new course");
-        if (courseRepository.existsByTitle(request.getTitle())) {
-            log.info("Course with name : {} already exist", request.getTitle());
-            return ResponseUtil.build(
-                    AppConstant.ResponseCode.BAD_CREDENTIALS,
-                    "Course with name already exist",
-                    HttpStatus.BAD_REQUEST
-            );
-        }
+    public ResponseEntity<Object> NewCourse(Long categoryId){
+        log.info("Executing create new course");
         try {
-            if (file.isEmpty()) {
-                throw new IllegalStateException("Cannot upload empty file");
-            }
-            //check if the file is an image
-            if (!Arrays.asList(IMAGE_PNG.getMimeType(),
-                    IMAGE_BMP.getMimeType(),
-                    IMAGE_GIF.getMimeType(),
-                    IMAGE_JPEG.getMimeType()).contains(file.getContentType())) {
-                throw new IllegalStateException("FIle uploaded is not an image");
-            }
-
-            //get file metadata
-            Map<String, String> metadata = new HashMap<>();
-            metadata.put("Content-Type", file.getContentType());
-            metadata.put("Content-Length", String.valueOf(file.getSize()));
-
-            //save image in s3
-            String pattern = "https://capstone-lms-storage.s3.amazonaws.com";
-            String uuid = UUID.randomUUID().toString().replace("-","");
-            String urlBucket = String.format("%s/%s/%s", BucketName.CONTENT_IMAGE.getBucketName(), "course-images", uuid);
-            String fileName = String.format("%s", file.getOriginalFilename());
-            String urlImage = String.format("%s/%s/%s/%s",pattern,"course-images",uuid,fileName);
-            uploadFileService.upload(urlBucket, fileName, Optional.of(metadata), file.getInputStream());
-
             //and then save course in database
             Optional<Category> category = categoryRepository.findById(categoryId);
-            Course course = mapper.map(request, Course.class);
+            Course course = new Course();
             course.setCategory(category.get());
-            course.setImageFileName(fileName);
-            course.setUrlBucket(urlBucket);
-            course.setUrlImage(urlImage);
             courseRepository.save(course);
 
-            log.info("Successfully added new course");
+            log.info("Successfully create new course");
             return ResponseUtil.build(ResponseCode.SUCCESS, mapper.map(course, CourseDto.class), HttpStatus.OK);
         } catch (Exception e) {
             log.error("An error occurred while trying to add new course. Error : {}", e.getMessage());
@@ -189,6 +180,7 @@ public class CourseService {
                 course.setId(id);
                 course.setTitle(request.getTitle());
                 course.setDescription(request.getDescription());
+                course.setLevel(request.getLevel());
                 courseRepository.save(course);
             });
 

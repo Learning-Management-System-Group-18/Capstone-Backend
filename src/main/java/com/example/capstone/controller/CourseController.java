@@ -29,9 +29,12 @@ public class CourseController {
 
     @GetMapping("/courses")
     public ResponseEntity<Object> getAllCourses(@RequestParam(value = "categoryId",required = false)Long categoryId,
-                                                @RequestParam("page")int page,
-                                                @RequestParam("size")int size) {
-        return courseService.getAllCourse(categoryId,page,size);
+                                                @RequestParam(value = "page",required = false)Integer page,
+                                                @RequestParam(value = "size",required = false)Integer size) {
+        if (page == null || size == null){
+            return courseService.getAllCourse(categoryId);
+        }
+        return courseService.getCourse(categoryId,page,size);
     }
 
     @GetMapping("/course")
@@ -39,14 +42,9 @@ public class CourseController {
         return courseService.getCourseById(id);
     }
 
-    @PostMapping(
-            path = "/admin/course",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> createNewCourse(@RequestParam(value = "categoryId") Long categoryId,
-                                                  @ModelAttribute CourseDto request,
-                                                  @RequestPart(value = "image") MultipartFile file){
-        return courseService.createNewCourse(categoryId,request,file);
+    @PostMapping(path = "/admin/course")
+    public ResponseEntity<Object> createNewCourse(@RequestParam(value = "categoryId") Long categoryId){
+        return courseService.NewCourse(categoryId);
     }
 
     @PutMapping( path = "/admin/course")

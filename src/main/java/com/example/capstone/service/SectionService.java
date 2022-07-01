@@ -53,6 +53,7 @@ public class SectionService {
     public ResponseEntity<Object> getAllContentBySectionId(Long sectionId, int page, int size) {
         log.info("Executing get all content");
         try {
+
             Pageable pageable = PageRequest.of(page-1,size);
             Page<Slide> slides = slideRepository.findAllBySectionId(sectionId,pageable);
             Page<Video> videos = videoRepository.findAllBySectionId(sectionId,pageable);

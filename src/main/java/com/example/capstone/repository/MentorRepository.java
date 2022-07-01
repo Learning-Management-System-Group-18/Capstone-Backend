@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface MentorRepository extends JpaRepository<Mentor, Long> {
     List<Mentor> findAllByCourseId(Long courseId);
+
 }

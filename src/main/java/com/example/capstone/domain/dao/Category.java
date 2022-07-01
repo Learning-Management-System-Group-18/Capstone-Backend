@@ -26,8 +26,10 @@ public class Category extends BaseDAO {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String title;
 
+    @Column(columnDefinition = "text")
     private String description;
 
     private String urlBucket;

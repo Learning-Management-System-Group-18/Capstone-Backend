@@ -5,10 +5,7 @@ import com.example.capstone.domain.dao.Course;
 import com.example.capstone.domain.dao.Order;
 import com.example.capstone.domain.dao.User;
 import com.example.capstone.domain.dto.OrderDto;
-import com.example.capstone.repository.CourseRepository;
-import com.example.capstone.repository.OrderRepository;
-import com.example.capstone.repository.ReviewRepository;
-import com.example.capstone.repository.UserRepository;
+import com.example.capstone.repository.*;
 import com.example.capstone.util.ResponseUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -39,7 +36,6 @@ public class OrderService {
     private UserRepository userRepository;
 
 
-
     public ResponseEntity<Object> createOrder(Long courseId, String email) {
         try {
             Optional<User> optionalUser = userRepository.findUserByEmail(email);
@@ -66,6 +62,7 @@ public class OrderService {
             order.setCourse(optionalCourse.get());
             order.setOrderDate(LocalDateTime.now());
             orderRepository.save(order);
+
 
             return ResponseUtil.build(AppConstant.ResponseCode.SUCCESS
                     , mapper.map(order, OrderDto.class), HttpStatus.OK);
