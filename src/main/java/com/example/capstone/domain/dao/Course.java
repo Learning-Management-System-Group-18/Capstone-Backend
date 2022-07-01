@@ -1,5 +1,6 @@
 package com.example.capstone.domain.dao;
 
+import com.example.capstone.constant.AppConstant;
 import com.example.capstone.domain.common.BaseDAO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -33,6 +34,9 @@ public class Course extends BaseDAO {
     private String title;
 
     private String description;
+
+    @Enumerated(EnumType.STRING)
+    private AppConstant.Level level;
 
     private double rating;
 

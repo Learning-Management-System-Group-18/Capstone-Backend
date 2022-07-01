@@ -1,11 +1,16 @@
 package com.example.capstone.controller;
 
+import com.example.capstone.constant.AppConstant;
+import com.example.capstone.util.ResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.capstone.domain.dto.SlideDto;
 import com.example.capstone.service.SlideService;
+
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/")
@@ -21,9 +26,14 @@ public class SlideController {
         return slideService.getAllSlideBySectionId(sectionId,page,size);
     }
 
-    @GetMapping("/slide")
-    public ResponseEntity<Object> getOneSlide(@RequestParam(value = "id") Long id) {
-        return slideService.getSlideById(id);
+    @GetMapping("/auth/slide")
+    public ResponseEntity<Object> getOneSlide(@RequestParam(value = "id") Long id,
+                                              Principal principal) {
+        if (principal != null){
+            return slideService.getSlideById(id, principal.getName());
+        } else {
+            return ResponseUtil.build(AppConstant.ResponseCode.NOT_LOGGED_IN,null, HttpStatus.FORBIDDEN);
+        }
     }
 
     @PostMapping("/admin/slide")

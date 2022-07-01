@@ -8,9 +8,16 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface CourseRepository extends JpaRepository<Course, Long> , JpaSpecificationExecutor<Course> {
     boolean existsByTitle(String title);
     Page<Course> findAllByCategoryId(Long categoryId, Pageable pageable);
+    List<Course> findAllByCategoryId(Long categoryId);
     Integer countCourseByCategoryId(Long id);
+
+
+
+
 }

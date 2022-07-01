@@ -51,9 +51,8 @@ public class CategoryService {
     @Autowired
     private OrderRepository orderRepository;
 
-
-    public ResponseEntity<Object> getAllCategory(int page, int size) {
-        log.info("Executing get all category");
+    public ResponseEntity<Object> getCategory(Integer page, Integer size) {
+        log.info("Executing get all category with pagination");
         try {
             Pageable pageable = PageRequest.of(page-1,size);
 
@@ -68,6 +67,29 @@ public class CategoryService {
                 categoryDto.setCountCourse(countCourse);
                 categoryDto.setCountUser(countUser);
 
+                request.add(categoryDto);
+            }
+
+            log.info("Successfully retrieved all Category with pagination");
+            return ResponseUtil.build(ResponseCode.SUCCESS, request ,HttpStatus.OK);
+        } catch (Exception e){
+            log.error("An error occurred while trying to get all Category. Error : {}",e.getMessage());
+            return ResponseUtil.build(ResponseCode.UNKNOWN_ERROR,null,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<Object> getAllCategory() {
+        log.info("Executing get all category");
+        try {
+            List<Category> categoryList = categoryRepository.findAll();
+            List<CategoryDto> request = new ArrayList<>();
+
+            for (Category category: categoryList){
+                Integer countUser = orderRepository.countOrderByCourse_CategoryId(category.getId());
+                Integer countCourse = courseRepository.countCourseByCategoryId(category.getId());
+                CategoryDto categoryDto = mapper.map(category, CategoryDto.class);
+                categoryDto.setCountCourse(countCourse);
+                categoryDto.setCountUser(countUser);
                 request.add(categoryDto);
             }
 

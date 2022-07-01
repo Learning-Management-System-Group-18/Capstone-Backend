@@ -30,9 +30,12 @@ public class CategoryController {
     }
 
     @GetMapping("/categories")
-    public ResponseEntity<Object> getAllCategory(@RequestParam ("page") int page,
-                                                 @RequestParam ("size") int size) {
-        return categoryService.getAllCategory(page,size);
+    public ResponseEntity<Object> getAllCategory(@RequestParam (value = "page",required = false) Integer page,
+                                                 @RequestParam (value = "size",required = false) Integer size) {
+        if (page == null || size == null){
+            return categoryService.getAllCategory();
+        }
+        return categoryService.getCategory(page,size);
     }
 
     @GetMapping("/category")

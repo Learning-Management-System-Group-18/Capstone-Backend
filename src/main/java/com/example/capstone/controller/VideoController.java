@@ -1,11 +1,16 @@
 package com.example.capstone.controller;
 
+import com.example.capstone.constant.AppConstant;
+import com.example.capstone.util.ResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.capstone.domain.dto.VideoDto;
 import com.example.capstone.service.VideoService;
+
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/")
@@ -21,9 +26,14 @@ public class VideoController {
         return videoService.getAllVideoBySectionId(sectionId,page,size);
     }
 
-    @GetMapping("/video")
-    public ResponseEntity<Object> getOneVideo(@RequestParam(value = "id") Long id) {
-        return videoService.getVideoById(id);
+    @GetMapping("/auth/video")
+    public ResponseEntity<Object> getOneVideo(@RequestParam(value = "id") Long id, Principal principal) {
+        if (principal != null){
+            return videoService.getVideoById(id, principal.getName());
+        } else {
+            return ResponseUtil.build(AppConstant.ResponseCode.NOT_LOGGED_IN,null, HttpStatus.FORBIDDEN);
+        }
+
     }
 
     @PostMapping("/admin/video")

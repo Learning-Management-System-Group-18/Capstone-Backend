@@ -31,6 +31,7 @@ public class Section extends BaseDAO{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String title;
 
     @ManyToOne

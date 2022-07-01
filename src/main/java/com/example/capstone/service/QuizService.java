@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.example.capstone.domain.dao.Slide;
+import com.example.capstone.domain.dao.*;
 import com.example.capstone.domain.dto.SlideDto;
 import com.example.capstone.domain.dto.VideoDto;
+import com.example.capstone.repository.OrderRepository;
+import com.example.capstone.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,8 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.example.capstone.constant.AppConstant.ResponseCode;
-import com.example.capstone.domain.dao.Quiz;
-import com.example.capstone.domain.dao.Section;
 import com.example.capstone.domain.dto.QuizDto;
 import com.example.capstone.repository.QuizRepository;
 import com.example.capstone.repository.SectionRepository;
@@ -36,6 +36,12 @@ public class QuizService {
 
     @Autowired
     private QuizRepository quizRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
 
     public ResponseEntity<Object> getAllQuizBySectionId(Long sectionId, int page, int size) {
         log.info("Executing get all quiz");
@@ -56,18 +62,28 @@ public class QuizService {
         }
     }
 
-    public ResponseEntity<Object> getQuizById(Long id) {
+    public ResponseEntity<Object> getQuizById(Long id,String email) {
         log.info("Executing get Quiz with ID : {}", id);
         try {
+            Optional<User> userOptional = userRepository.findUserByEmail(email);
+            if (userOptional.isEmpty()){
+                log.info("User with Email [{}] not found",email);
+                return ResponseUtil.build(ResponseCode.DATA_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
+            }
             Optional<Quiz> quiz = quizRepository.findById(id);
             if (quiz.isEmpty()) {
                 log.info("Quiz with ID [{}] not found", id);
-                return ResponseUtil.build(ResponseCode.DATA_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
+                return ResponseUtil.build(ResponseCode.DATA_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
             }
 
-            QuizDto request = mapper.map(quiz, QuizDto.class);
-            log.info("Successfully retrieved Quiz with ID : {}", id);
-            return ResponseUtil.build(ResponseCode.SUCCESS, request, HttpStatus.OK);
+            Course course = quiz.get().getSection().getCourse();
+            if (orderRepository.existsByCourseIdAndUserId(course.getId(),userOptional.get().getId())){
+                QuizDto request = mapper.map(quiz, QuizDto.class);
+                log.info("Successfully retrieved Quiz with ID : {}", id);
+                return ResponseUtil.build(ResponseCode.SUCCESS,request,HttpStatus.OK);
+            } else {
+                return ResponseUtil.build(ResponseCode.NOT_ENROLL,null,HttpStatus.FORBIDDEN);
+            }
         } catch (Exception e) {
             log.error("An error occurred while trying to get Quiz with ID : {}. Error : {}", id, e.getMessage());
             return ResponseUtil.build(ResponseCode.UNKNOWN_ERROR, null, HttpStatus.INTERNAL_SERVER_ERROR);

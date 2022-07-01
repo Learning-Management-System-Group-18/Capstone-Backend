@@ -1,5 +1,6 @@
 package com.example.capstone.domain.dto;
 
+import com.example.capstone.constant.AppConstant;
 import com.example.capstone.domain.payload.response.CategoryResponse;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -26,6 +27,8 @@ public class CourseDto {
     private double rating;
 
     private String description;
+
+    private AppConstant.Level level;
 
     @JsonIgnore
     private String urlBucket;

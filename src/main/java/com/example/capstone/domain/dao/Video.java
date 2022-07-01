@@ -29,10 +29,13 @@ public class Video extends BaseDAO {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String title;
 
+    @Column(columnDefinition = "text")
     private String description;
 
+    @Column(nullable = false)
     private String link;
 
     @ManyToOne
