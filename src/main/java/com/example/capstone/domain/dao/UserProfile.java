@@ -43,6 +43,12 @@ public class UserProfile extends BaseDAO {
 
     private String address;
 
+    private String urlBucket;
+
+    private String urlImage;
+
+    private String imageFileName;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;

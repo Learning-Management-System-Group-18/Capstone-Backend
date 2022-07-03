@@ -4,6 +4,7 @@ import com.example.capstone.constant.AppConstant;
 import com.example.capstone.constant.AppConstant.*;
 import com.example.capstone.domain.payload.response.UserResponse;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -41,5 +42,14 @@ public class UserProfileDto {
 
     private String address;
 
+    @JsonIgnore
+    private String urlBucket;
+
+    private String urlImage;
+
+    @JsonIgnore
+    private String imageFileName;
+
     private UserResponse user;
+
 }
