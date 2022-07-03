@@ -12,4 +12,6 @@ import com.example.capstone.domain.dao.Section;
 public interface SectionRepository extends JpaRepository<Section, Long>{
     Page<Section> findAllByCourseId(Long courseId, Pageable pageable);
     boolean existsByTitle(String title);
+
+
 }

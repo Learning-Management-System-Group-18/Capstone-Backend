@@ -14,6 +14,7 @@ import com.example.capstone.repository.UserRepository;
 import com.example.capstone.security.JwtTokenProvider;
 import com.example.capstone.util.ResponseUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -72,8 +73,10 @@ public class AuthService {
 
         log.info("User doesnt exist yet, creating new user");
         User user = modelMapper.map(req, User.class);
+        String employeeId = RandomStringUtils.randomNumeric(6);
         UserProfile userProfile = new UserProfile();
         userProfile.setUser(user);
+        userProfile.setEmployeeId(employeeId);
         user.setPassword(passwordEncoder.encode(req.getPassword()));
         Set<Role> roles = new HashSet<>();
 
@@ -91,7 +94,7 @@ public class AuthService {
 //        }
 //         end of temporary code
 
-        roleRepository.findByName(AppConstant.RoleType.ROLE_USER).ifPresent(roles::add);
+        roleRepository.findByName(AppConstant.RoleType.ROLE_ADMIN).ifPresent(roles::add);
 
         user.setRoles(roles);
         userRepository.save(user);

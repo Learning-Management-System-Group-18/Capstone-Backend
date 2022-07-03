@@ -3,6 +3,7 @@ package com.example.capstone.domain.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -25,6 +26,9 @@ public class SlideDto {
     private String description;
 
     private String link;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Boolean completed;
 
     @JsonIgnore
     private SectionDto section;

@@ -36,6 +36,15 @@ public class SlideController {
         }
     }
 
+    @PostMapping("/auth/slide")
+    public ResponseEntity<Object> completedSlide(@RequestParam(value = "id") Long id, Principal principal){
+        if (principal != null){
+            return slideService.completeSlide(id, principal.getName());
+        } else {
+            return ResponseUtil.build(AppConstant.ResponseCode.NOT_LOGGED_IN,null, HttpStatus.FORBIDDEN);
+        }
+    }
+
     @PostMapping("/admin/slide")
     public ResponseEntity<Object> createNewSlide(@RequestParam(value = "sectionId")Long sectionId,
                                                     @RequestBody SlideDto request){

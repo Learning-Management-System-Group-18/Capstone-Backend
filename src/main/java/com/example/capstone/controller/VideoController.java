@@ -36,6 +36,15 @@ public class VideoController {
 
     }
 
+    @PostMapping("/auth/video")
+    public ResponseEntity<Object> completedVideo(@RequestParam(value = "id") Long id, Principal principal){
+        if (principal != null){
+            return videoService.completeVideo(id, principal.getName());
+        } else {
+            return ResponseUtil.build(AppConstant.ResponseCode.NOT_LOGGED_IN,null, HttpStatus.FORBIDDEN);
+        }
+    }
+
     @PostMapping("/admin/video")
     public ResponseEntity<Object> createNewVideo(@RequestParam(value = "sectionId")Long sectionId,
                                                     @RequestBody VideoDto request){

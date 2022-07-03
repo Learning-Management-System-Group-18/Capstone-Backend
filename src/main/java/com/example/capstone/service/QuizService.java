@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.example.capstone.constant.AppConstant;
 import com.example.capstone.domain.dao.*;
 import com.example.capstone.domain.dto.SlideDto;
 import com.example.capstone.domain.dto.VideoDto;
-import com.example.capstone.repository.OrderRepository;
-import com.example.capstone.repository.UserRepository;
+import com.example.capstone.repository.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,8 +20,6 @@ import org.springframework.stereotype.Service;
 
 import com.example.capstone.constant.AppConstant.ResponseCode;
 import com.example.capstone.domain.dto.QuizDto;
-import com.example.capstone.repository.QuizRepository;
-import com.example.capstone.repository.SectionRepository;
 import com.example.capstone.util.ResponseUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +40,9 @@ public class QuizService {
 
     @Autowired
     private OrderRepository orderRepository;
+
+    @Autowired
+    private QuizCompletedRepository quizCompletedRepository;
 
     public ResponseEntity<Object> getAllQuizBySectionId(Long sectionId, int page, int size) {
         log.info("Executing get all quiz");
@@ -79,6 +80,8 @@ public class QuizService {
             Course course = quiz.get().getSection().getCourse();
             if (orderRepository.existsByCourseIdAndUserId(course.getId(),userOptional.get().getId())){
                 QuizDto request = mapper.map(quiz, QuizDto.class);
+                Boolean isCompleted = quizCompletedRepository.existsByUserIdAndQuizId(userOptional.get().getId(),id);
+                request.setCompleted(isCompleted);
                 log.info("Successfully retrieved Quiz with ID : {}", id);
                 return ResponseUtil.build(ResponseCode.SUCCESS,request,HttpStatus.OK);
             } else {
@@ -86,6 +89,45 @@ public class QuizService {
             }
         } catch (Exception e) {
             log.error("An error occurred while trying to get Quiz with ID : {}. Error : {}", id, e.getMessage());
+            return ResponseUtil.build(ResponseCode.UNKNOWN_ERROR, null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<Object> completeQuiz(Long id, String email) {
+        log.info("Executing to make Quiz complete with ID : {}", id);
+        try {
+            Optional<User> userOptional = userRepository.findUserByEmail(email);
+            if (userOptional.isEmpty()) {
+                log.info("User with Email [{}] not found", email);
+                return ResponseUtil.build(ResponseCode.DATA_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
+            }
+            Optional<Quiz> optionalQuiz = quizRepository.findById(id);
+            if (optionalQuiz.isEmpty()) {
+                log.info("Quiz with ID [{}] not found", id);
+                return ResponseUtil.build(ResponseCode.DATA_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
+            }
+
+            Course course = optionalQuiz.get().getSection().getCourse();
+
+            if(!orderRepository.existsByCourseIdAndUserId(course.getId(),userOptional.get().getId())){
+                return ResponseUtil.build(ResponseCode.NOT_ENROLL,null,HttpStatus.FORBIDDEN);
+            }
+
+            if(!quizCompletedRepository.existsByUserIdAndQuizId(userOptional.get().getId(), id)){
+                QuizCompleted quizCompleted = new QuizCompleted();
+                quizCompleted.setQuiz(optionalQuiz.get());
+                quizCompleted.setUser(userOptional.get());
+                quizCompletedRepository.save(quizCompleted);
+                log.info("Successfully Complete Quiz With Id {}", id);
+                return ResponseUtil.build(AppConstant.ResponseCode.SUCCESS,
+                        "Success Completed Quiz",
+                        HttpStatus.OK);
+            } else {
+                return ResponseUtil.build(ResponseCode.ALREADY_COMPLETED,null,HttpStatus.BAD_REQUEST);
+            }
+
+        } catch (Exception e) {
+            log.error("An Error occurred while trying to completed quiz. Error:{}",e.getMessage());
             return ResponseUtil.build(ResponseCode.UNKNOWN_ERROR, null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

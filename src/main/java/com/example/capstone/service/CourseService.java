@@ -7,13 +7,11 @@ import com.example.capstone.domain.common.SearchSpecification;
 import com.example.capstone.domain.dao.Category;
 import com.example.capstone.domain.dao.Course;
 import com.example.capstone.domain.dao.Order;
+import com.example.capstone.domain.dao.User;
 import com.example.capstone.domain.dto.CategoryDto;
 import com.example.capstone.domain.dto.CourseDto;
 import com.example.capstone.domain.payload.request.SearchRequest;
-import com.example.capstone.repository.CategoryRepository;
-import com.example.capstone.repository.CourseRepository;
-import com.example.capstone.repository.OrderRepository;
-import com.example.capstone.repository.ReviewRepository;
+import com.example.capstone.repository.*;
 import com.example.capstone.util.ResponseUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,8 +49,6 @@ public class CourseService {
     @Autowired
     private ReviewRepository reviewRepository;
 
-    @Autowired
-    private OrderRepository orderRepository;
 
     public ResponseEntity<Object> searchCourses(SearchRequest request){
         try {
@@ -138,6 +134,7 @@ public class CourseService {
                 log.info("Course with ID [{}] not found", id);
                 return ResponseUtil.build(ResponseCode.DATA_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
             }
+
             Double rating = reviewRepository.averageOfCourseReviewRating(id);
             CourseDto request = mapper.map(course, CourseDto.class);
             request.setRating(Objects.requireNonNullElse(rating,0.0));

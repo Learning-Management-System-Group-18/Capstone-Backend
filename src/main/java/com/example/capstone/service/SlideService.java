@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.example.capstone.constant.AppConstant;
 import com.example.capstone.domain.dao.*;
 import com.example.capstone.domain.dto.SectionDto;
 import com.example.capstone.domain.dto.VideoDto;
-import com.example.capstone.repository.OrderRepository;
-import com.example.capstone.repository.UserRepository;
+import com.example.capstone.repository.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,8 +20,6 @@ import org.springframework.stereotype.Service;
 
 import com.example.capstone.constant.AppConstant.ResponseCode;
 import com.example.capstone.domain.dto.SlideDto;
-import com.example.capstone.repository.SectionRepository;
-import com.example.capstone.repository.SlideRepository;
 import com.example.capstone.util.ResponseUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +40,9 @@ public class SlideService {
 
     @Autowired
     private OrderRepository orderRepository;
+
+    @Autowired
+    private SlideCompletedRepository slideCompletedRepository;
 
     public ResponseEntity<Object> getAllSlideBySectionId(Long sectionId, int page, int size) {
         log.info("Executing get all slide");
@@ -79,6 +80,8 @@ public class SlideService {
             Course course = slide.get().getSection().getCourse();
             if (orderRepository.existsByCourseIdAndUserId(course.getId(),userOptional.get().getId())){
                 SlideDto request = mapper.map(slide, SlideDto.class);
+                Boolean isCompleted = slideCompletedRepository.existsByUserIdAndSlideId(userOptional.get().getId(),id);
+                request.setCompleted(isCompleted);
                 log.info("Successfully retrieved Slide with ID : {}", id);
                 return ResponseUtil.build(ResponseCode.SUCCESS,request,HttpStatus.OK);
             } else {
@@ -103,6 +106,45 @@ public class SlideService {
             return ResponseUtil.build(ResponseCode.SUCCESS, mapper.map(slide, SlideDto.class), HttpStatus.OK);
         } catch (Exception e){
             log.error("An Error occurred while trying to add new slide. Error:{}",e.getMessage());
+            return ResponseUtil.build(ResponseCode.UNKNOWN_ERROR, null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<Object> completeSlide(Long id, String email) {
+        log.info("Executing to make Slide complete with ID : {}", id);
+        try {
+            Optional<User> userOptional = userRepository.findUserByEmail(email);
+            if (userOptional.isEmpty()) {
+                log.info("User with Email [{}] not found", email);
+                return ResponseUtil.build(ResponseCode.DATA_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
+            }
+            Optional<Slide> optionalSlide = slideRepository.findById(id);
+            if (optionalSlide.isEmpty()) {
+                log.info("Slide with ID [{}] not found", id);
+                return ResponseUtil.build(ResponseCode.DATA_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
+            }
+
+            Course course = optionalSlide.get().getSection().getCourse();
+
+            if(!orderRepository.existsByCourseIdAndUserId(course.getId(),userOptional.get().getId())){
+                return ResponseUtil.build(ResponseCode.NOT_ENROLL,null,HttpStatus.FORBIDDEN);
+            }
+
+            if(!slideCompletedRepository.existsByUserIdAndSlideId(userOptional.get().getId(), id)){
+                SlideCompleted slideCompleted = new SlideCompleted();
+                slideCompleted.setSlide(optionalSlide.get());
+                slideCompleted.setUser(userOptional.get());
+                slideCompletedRepository.save(slideCompleted);
+                log.info("Successfully Complete Slide With Id {}", id);
+                return ResponseUtil.build(AppConstant.ResponseCode.SUCCESS,
+                        "Success Completed Slide",
+                        HttpStatus.OK);
+            } else {
+                return ResponseUtil.build(ResponseCode.ALREADY_COMPLETED,null,HttpStatus.BAD_REQUEST);
+            }
+
+        } catch (Exception e) {
+            log.error("An Error occurred while trying to completed slide. Error:{}",e.getMessage());
             return ResponseUtil.build(ResponseCode.UNKNOWN_ERROR, null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

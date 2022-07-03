@@ -36,6 +36,15 @@ public class QuizController {
         }
     }
 
+    @PostMapping("/auth/quiz")
+    public ResponseEntity<Object> completedQuiz(@RequestParam(value = "id") Long id, Principal principal){
+        if (principal != null){
+            return quizService.completeQuiz(id, principal.getName());
+        } else {
+            return ResponseUtil.build(AppConstant.ResponseCode.NOT_LOGGED_IN,null, HttpStatus.FORBIDDEN);
+        }
+    }
+
     @PostMapping("/admin/quiz")
     public ResponseEntity<Object> createNewQuiz(@RequestParam(value = "sectionId")Long sectionId,
                                                     @RequestBody QuizDto request){

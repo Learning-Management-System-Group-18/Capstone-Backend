@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.example.capstone.constant.AppConstant;
 import com.example.capstone.domain.dao.*;
+import com.example.capstone.domain.dto.UserProfileDto;
 import com.example.capstone.repository.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,9 @@ public class VideoService {
 
     @Autowired
     private OrderRepository orderRepository;
+
+    @Autowired
+    private VideoCompletedRepository videoCompletedRepository;
 
     public ResponseEntity<Object> getAllVideoBySectionId(Long sectionId, int page, int size) {
         log.info("Executing get all video");
@@ -73,9 +78,10 @@ public class VideoService {
             }
 
             Course course = video.get().getSection().getCourse();
-
             if (orderRepository.existsByCourseIdAndUserId(course.getId(),userOptional.get().getId())){
                 VideoDto request = mapper.map(video, VideoDto.class);
+                Boolean isCompleted = videoCompletedRepository.existsByUserIdAndVideoId(userOptional.get().getId(),id);
+                request.setCompleted(isCompleted);
                 log.info("Successfully retrieved Video with ID : {}", id);
                 return ResponseUtil.build(ResponseCode.SUCCESS,request,HttpStatus.OK);
             } else {
@@ -100,6 +106,45 @@ public class VideoService {
             return ResponseUtil.build(ResponseCode.SUCCESS, mapper.map(video, VideoDto.class), HttpStatus.OK);
         } catch (Exception e){
             log.error("An Error occurred while trying to add new video. Error:{}",e.getMessage());
+            return ResponseUtil.build(ResponseCode.UNKNOWN_ERROR, null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<Object> completeVideo(Long id, String email) {
+        log.info("Executing to make Video complete with ID : {}", id);
+        try {
+            Optional<User> userOptional = userRepository.findUserByEmail(email);
+            if (userOptional.isEmpty()) {
+                log.info("User with Email [{}] not found", email);
+                return ResponseUtil.build(ResponseCode.DATA_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
+            }
+            Optional<Video> optionalVideo = videoRepository.findById(id);
+            if (optionalVideo.isEmpty()) {
+                log.info("Video with ID [{}] not found", id);
+                return ResponseUtil.build(ResponseCode.DATA_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
+            }
+
+            Course course = optionalVideo.get().getSection().getCourse();
+
+            if(!orderRepository.existsByCourseIdAndUserId(course.getId(),userOptional.get().getId())){
+                return ResponseUtil.build(ResponseCode.NOT_ENROLL,null,HttpStatus.FORBIDDEN);
+            }
+
+            if(!videoCompletedRepository.existsByUserIdAndVideoId(userOptional.get().getId(), id)){
+                VideoCompleted videoCompleted = new VideoCompleted();
+                videoCompleted.setVideo(optionalVideo.get());
+                videoCompleted.setUser(userOptional.get());
+                videoCompletedRepository.save(videoCompleted);
+                log.info("Successfully Complete Video With Id {}", id);
+                return ResponseUtil.build(AppConstant.ResponseCode.SUCCESS,
+                        "Success Completed Video",
+                        HttpStatus.OK);
+            } else {
+                return ResponseUtil.build(ResponseCode.ALREADY_COMPLETED,null,HttpStatus.BAD_REQUEST);
+            }
+
+        } catch (Exception e) {
+            log.error("An Error occurred while trying to completed video. Error:{}",e.getMessage());
             return ResponseUtil.build(ResponseCode.UNKNOWN_ERROR, null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

@@ -42,6 +42,8 @@ public class SecurityConfiguration{
         http.headers().frameOptions().disable();
         http.authorizeRequests().antMatchers("/admin/**").hasRole("ADMIN")
                 .antMatchers("/api/**").permitAll();
+        http.authorizeRequests().antMatchers("/auth/**").hasAnyRole("ADMIN","USER")
+                .antMatchers("api/**").permitAll();
 
         //remove session
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
