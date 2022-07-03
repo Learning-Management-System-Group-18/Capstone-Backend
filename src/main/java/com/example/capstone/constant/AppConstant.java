@@ -18,7 +18,8 @@ public class AppConstant {
         NOT_LOGGED_IN("NOT_LOGGED_IN", "Login first to access this endpoint"),
         USER_EXIST("USER_EXIST","User Already Exist"),
         PASSWORD_INCORRECT("PASSWORD_INCORRECT","Password is incorrect"),
-        NOT_ENROLL("NOT_ENROLL","Enroll first to access this endpoint");
+        NOT_ENROLL("NOT_ENROLL","Enroll first to access this endpoint"),
+        ALREADY_COMPLETED("ALREADY_COMPLETED","You Have Already Completed this Content");
 
         private final String code;
         private final String message;

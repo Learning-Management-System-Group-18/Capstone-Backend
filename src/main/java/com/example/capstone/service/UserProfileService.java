@@ -83,7 +83,6 @@ public class UserProfileService {
             profile.setDateOfBirth(request.getDateOfBirth());
             profile.setRole(request.getRole());
             profile.setStatus(request.getStatus());
-            profile.setEmployeeId(request.getEmployeeId());
             profile = userProfileRepository.save(profile);
 
             log.info("Successfully updated profile");

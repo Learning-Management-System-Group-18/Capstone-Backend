@@ -14,6 +14,6 @@ public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecific
     Integer countOrderByCourse_CategoryId(Long id);
     Order findAllByCourseId(Long id);
 
-    Order findOrderByCourseIdAndUserIs(Long course_id, User user);
+    List<Order> findOrderByUser(User user);
     boolean existsByCourseIdAndUserId(Long courseId, Long userId);
 }

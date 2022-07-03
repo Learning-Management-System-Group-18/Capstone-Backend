@@ -15,9 +15,13 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class SlideResponse {
+    private  Long id;
+
     private String title;
 
     private String description;
 
     private String link;
+
+    private Boolean completed;
 }

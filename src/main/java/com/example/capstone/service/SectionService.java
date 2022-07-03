@@ -49,10 +49,19 @@ public class SectionService {
     @Autowired
     private QuizRepository quizRepository;
 
+    @Autowired
+    private UserRepository userRepository;
 
-    public ResponseEntity<Object> getAllContentBySectionId(Long sectionId, int page, int size) {
+
+    public ResponseEntity<Object> getAllContentBySectionId(Long sectionId, int page, int size, String email) {
         log.info("Executing get all content");
         try {
+
+            Optional<User> userOptional = userRepository.findUserByEmail(email);
+            if (userOptional.isEmpty()){
+                log.info("User with Email [{}] not found",email);
+                return ResponseUtil.build(ResponseCode.DATA_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
+            }
 
             Pageable pageable = PageRequest.of(page-1,size);
             Page<Slide> slides = slideRepository.findAllBySectionId(sectionId,pageable);

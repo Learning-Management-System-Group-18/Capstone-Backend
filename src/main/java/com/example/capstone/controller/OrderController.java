@@ -27,6 +27,16 @@ public class OrderController {
         }
     }
 
+    @GetMapping("/auth/order")
+    public ResponseEntity<Object> newOrder(Principal principal) {
+        if (principal != null){
+            return orderService.getOrderByUserId(principal.getName());
+        } else {
+            return ResponseUtil.build(AppConstant.ResponseCode.NOT_LOGGED_IN,null, HttpStatus.FORBIDDEN);
+        }
+
+    }
+
     @GetMapping("/orders")
     public ResponseEntity<Object> getAllOrder(){
         return orderService.getAllOrders();
