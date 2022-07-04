@@ -12,6 +12,7 @@ import java.util.List;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecificationExecutor<Order> {
     Integer countOrderByCourse_CategoryId(Long id);
+    Integer countOrderByCourseId(Long id);
     Order findAllByCourseId(Long id);
 
     List<Order> findOrderByUser(User user);
