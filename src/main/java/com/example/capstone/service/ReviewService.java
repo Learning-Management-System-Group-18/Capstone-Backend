@@ -64,11 +64,19 @@ public class ReviewService {
     }
 
 
-    public ResponseEntity<Object> getReviewByCourseId(Long courseId, int page, int size) {
+    public ResponseEntity<Object> getReviewByCourseId(Long courseId, Integer rating,  int page, int size) {
         log.info("Executing get all Review by Course ID [{}]", courseId);
         try {
             Pageable pageable = PageRequest.of(page-1, size);
-            Page<Review> reviews = reviewRepository.findAllByCourseId(courseId, pageable);
+            Page<Review> reviews;
+            if (rating == null) {
+                log.info("Rating is null. Getting all reviews");
+                reviews = reviewRepository.findAllByCourseId(courseId, pageable);
+            } else {
+                log.info("Rating is not null. Getting reviews by rating");
+                reviews = reviewRepository.findAllByCourseIdAndRating(courseId,rating,pageable);
+            }
+
             List<ReviewDto> reviewRequests = new ArrayList<>();
             for (Review review :
                     reviews) {
