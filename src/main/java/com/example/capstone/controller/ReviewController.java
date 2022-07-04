@@ -27,9 +27,10 @@ public class ReviewController {
 
     @GetMapping("/review")
     public ResponseEntity<Object> getReviewByCourse(@RequestParam("courseId") Long courseId,
+                                                    @RequestParam(value = "rating",required = false) Integer rating ,
                                                     @RequestParam("page") int page,
                                                     @RequestParam("size") int limit) {
-        return reviewService.getReviewByCourseId(courseId, page, limit);
+        return reviewService.getReviewByCourseId(courseId, rating, page, limit);
     }
 
     @PostMapping("/auth/review")

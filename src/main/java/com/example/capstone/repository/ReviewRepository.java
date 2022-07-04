@@ -13,9 +13,8 @@ import java.util.Optional;
 
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> , JpaSpecificationExecutor<Review> {
-    Optional<Review> findByCourseIdAndUserId(Long courseId, Long userId);
     Page<Review> findAllByCourseId(Long courseId, Pageable pageable);
-    Page<Review> findAllByCourseIdAndRating(Long courseId, int rating, Pageable pageable);
+    Page<Review> findAllByCourseIdAndRating(Long courseId, Integer rating, Pageable pageable);
     @Query("SELECT AVG(r.rating) FROM Review r WHERE r.course.id = ?1")
     Double averageOfCourseReviewRating(Long courseId);
 }
