@@ -49,6 +49,9 @@ public class CourseService {
     @Autowired
     private ReviewRepository reviewRepository;
 
+    @Autowired
+    private OrderRepository orderRepository;
+
 
     public ResponseEntity<Object> searchCourses(SearchRequest request){
         try {
@@ -113,10 +116,13 @@ public class CourseService {
 
             List<CourseDto> request = new ArrayList<>();
             for (Course course: courseList){
+                Integer countUser = orderRepository.countOrderByCourseId(course.getId());
                 Double rating = reviewRepository.averageOfCourseReviewRating(course.getId());
                 CourseDto courseDto = mapper.map(course, CourseDto.class);
                 courseDto.setRating(Objects.requireNonNullElse(rating,0.0));
+                courseDto.setCountUser(countUser);
                 request.add(courseDto);
+
             }
             log.info("Successfully retrieved all course");
             return ResponseUtil.build(ResponseCode.SUCCESS, request, HttpStatus.OK);
@@ -134,10 +140,11 @@ public class CourseService {
                 log.info("Course with ID [{}] not found", id);
                 return ResponseUtil.build(ResponseCode.DATA_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
             }
-
+            Integer countUser = orderRepository.countOrderByCourseId(id);
             Double rating = reviewRepository.averageOfCourseReviewRating(id);
             CourseDto request = mapper.map(course, CourseDto.class);
             request.setRating(Objects.requireNonNullElse(rating,0.0));
+            request.setCountUser(countUser);
 
             log.info("Successfully retrieved Course with ID : {}", id);
             return ResponseUtil.build(ResponseCode.SUCCESS,request,HttpStatus.OK);
@@ -150,7 +157,7 @@ public class CourseService {
     public ResponseEntity<Object> NewCourse(Long categoryId){
         log.info("Executing create new course");
         try {
-            //and then save course in database
+
             Optional<Category> category = categoryRepository.findById(categoryId);
             Course course = new Course();
             course.setCategory(category.get());

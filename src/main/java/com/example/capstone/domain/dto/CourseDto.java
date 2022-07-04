@@ -30,12 +30,12 @@ public class CourseDto {
 
     private AppConstant.Level level;
 
-    private Integer notFinish;
-
     @JsonIgnore
     private String urlBucket;
 
     private String urlImage;
+
+    private Integer countUser;
 
     @JsonIgnore
     private String imageFileName;
