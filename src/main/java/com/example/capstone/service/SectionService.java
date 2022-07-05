@@ -52,6 +52,15 @@ public class SectionService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private SlideCompletedRepository slideCompletedRepository;
+
+    @Autowired
+    private VideoCompletedRepository videoCompletedRepository;
+
+    @Autowired
+    private QuizCompletedRepository quizCompletedRepository;
+
 
     public ResponseEntity<Object> getAllContentBySectionId(Long sectionId, int page, int size, String email) {
         log.info("Executing get all content");
@@ -75,16 +84,22 @@ public class SectionService {
 
             for (Slide slide: slides){
                 SlideResponse slideResponse = mapper.map(slide, SlideResponse.class);
+                Boolean isCompleted = slideCompletedRepository.existsByUserIdAndSlideId(userOptional.get().getId(), slideResponse.getId());
+                slideResponse.setCompleted(isCompleted);
                 slideResponses.add(slideResponse);
             }
 
             for (Video video: videos){
                 VideoResponse videoResponse = mapper.map(video, VideoResponse.class);
+                Boolean isCompleted = videoCompletedRepository.existsByUserIdAndVideoId(userOptional.get().getId(), videoResponse.getId());
+                videoResponse.setCompleted(isCompleted);
                 videoResponses.add(videoResponse);
             }
 
             for (Quiz quiz: quizzes){
                 QuizResponse quizResponse = mapper.map(quiz, QuizResponse.class);
+                Boolean isCompleted = quizCompletedRepository.existsByUserIdAndQuizId(userOptional.get().getId(), quizResponse.getId());
+                quizResponse.setCompleted(isCompleted);
                 quizResponses.add(quizResponse);
             }
             request.setQuiz(quizResponses);
