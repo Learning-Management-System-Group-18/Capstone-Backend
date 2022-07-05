@@ -9,9 +9,11 @@ import org.springframework.stereotype.Repository;
 
 import com.example.capstone.domain.dao.Video;
 
+import java.util.List;
+
 @Repository
 public interface VideoRepository extends JpaRepository<Video, Long>{
-    Page<Video> findAllBySectionId(Long sectionId, Pageable pageable);
+    List<Video> findAllBySectionId(Long sectionId);
     boolean existsByTitle(String title);
 
     @Query("SELECT COUNT (p) FROM Video p WHERE p.section.course.id = ?1")

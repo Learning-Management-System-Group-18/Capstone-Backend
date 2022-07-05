@@ -44,25 +44,6 @@ public class SlideService {
     @Autowired
     private SlideCompletedRepository slideCompletedRepository;
 
-    public ResponseEntity<Object> getAllSlideBySectionId(Long sectionId, int page, int size) {
-        log.info("Executing get all slide");
-        try {
-            Pageable pageable = PageRequest.of(page-1,size);
-            Page<Slide> slides = slideRepository.findAllBySectionId(sectionId,pageable);
-
-            List<SlideDto> request = new ArrayList<>();
-            for (Slide slide: slides){
-                SlideDto slideDto = mapper.map(slide, SlideDto.class);
-                request.add(slideDto);
-            }
-            log.info("Successfully retrieved all slide");
-            return ResponseUtil.build(ResponseCode.SUCCESS, request, HttpStatus.OK);
-        } catch (Exception e){
-            log.error("An error occurred while trying to get all slide. Error : {}", e.getMessage());
-            return ResponseUtil.build(ResponseCode.UNKNOWN_ERROR, null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
     public ResponseEntity<Object> getSlideById(Long id, String email) {
         log.info("Executing get Slide with ID : {}", id);
         try {

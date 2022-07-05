@@ -44,25 +44,6 @@ public class QuizService {
     @Autowired
     private QuizCompletedRepository quizCompletedRepository;
 
-    public ResponseEntity<Object> getAllQuizBySectionId(Long sectionId, int page, int size) {
-        log.info("Executing get all quiz");
-        try {
-            Pageable pageable = PageRequest.of(page-1,size);
-            Page<Quiz> quizzes = quizRepository.findAllBySectionId(sectionId,pageable);
-
-            List<QuizDto> request = new ArrayList<>();
-            for (Quiz quiz: quizzes){
-                QuizDto quizDto = mapper.map(quiz, QuizDto.class);
-                request.add(quizDto);
-            }
-            log.info("Successfully retrieved all quiz");
-            return ResponseUtil.build(ResponseCode.SUCCESS, request, HttpStatus.OK);
-        } catch (Exception e){
-            log.error("An error occurred while trying to get all quiz. Error : {}", e.getMessage());
-            return ResponseUtil.build(ResponseCode.UNKNOWN_ERROR, null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
     public ResponseEntity<Object> getQuizById(Long id,String email) {
         log.info("Executing get Quiz with ID : {}", id);
         try {

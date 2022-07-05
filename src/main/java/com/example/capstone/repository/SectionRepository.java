@@ -8,9 +8,11 @@ import org.springframework.stereotype.Repository;
 
 import com.example.capstone.domain.dao.Section;
 
+import java.util.List;
+
 @Repository
 public interface SectionRepository extends JpaRepository<Section, Long>{
-    Page<Section> findAllByCourseId(Long courseId, Pageable pageable);
+    List<Section> findAllByCourseId(Long courseId);
     boolean existsByTitle(String title);
 
 

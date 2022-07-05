@@ -9,9 +9,11 @@ import org.springframework.stereotype.Repository;
 
 import com.example.capstone.domain.dao.Quiz;
 
+import java.util.List;
+
 @Repository
 public interface QuizRepository extends JpaRepository<Quiz, Long>{
-    Page<Quiz> findAllBySectionId(Long sectionId, Pageable pageable);
+    List<Quiz> findAllBySectionId(Long sectionId);
     boolean existsByTitle(String title);
 
     @Query("SELECT COUNT (p) FROM Quiz p WHERE p.section.course.id = ?1")

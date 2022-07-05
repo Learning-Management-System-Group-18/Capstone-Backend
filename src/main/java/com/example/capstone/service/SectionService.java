@@ -62,7 +62,7 @@ public class SectionService {
     private QuizCompletedRepository quizCompletedRepository;
 
 
-    public ResponseEntity<Object> getAllContentBySectionId(Long sectionId, int page, int size, String email) {
+    public ResponseEntity<Object> getAllContentBySectionId(Long sectionId, String email) {
         log.info("Executing get all content");
         try {
 
@@ -72,10 +72,10 @@ public class SectionService {
                 return ResponseUtil.build(ResponseCode.DATA_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
             }
 
-            Pageable pageable = PageRequest.of(page-1,size);
-            Page<Slide> slides = slideRepository.findAllBySectionId(sectionId,pageable);
-            Page<Video> videos = videoRepository.findAllBySectionId(sectionId,pageable);
-            Page<Quiz> quizzes = quizRepository.findAllBySectionId(sectionId,pageable);
+
+            List<Slide> slides = slideRepository.findAllBySectionId(sectionId);
+            List<Video> videos = videoRepository.findAllBySectionId(sectionId);
+            List<Quiz> quizzes = quizRepository.findAllBySectionId(sectionId);
 
             ContentDto request = new ContentDto();
             List<VideoResponse> videoResponses = new ArrayList<>();
@@ -114,11 +114,10 @@ public class SectionService {
         }
     }
 
-    public ResponseEntity<Object> getAllSectionByCourseId(Long courseId, int page, int size) {
+    public ResponseEntity<Object> getAllSectionByCourseId(Long courseId) {
         log.info("Executing get all section");
         try {
-            Pageable pageable = PageRequest.of(page-1,size);
-            Page<Section> sections = sectionRepository.findAllByCourseId(courseId,pageable);
+            List<Section> sections = sectionRepository.findAllByCourseId(courseId);
 
             List<SectionDto> request = new ArrayList<>();
             for (Section section: sections){

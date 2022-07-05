@@ -9,9 +9,11 @@ import org.springframework.stereotype.Repository;
 
 import com.example.capstone.domain.dao.Slide;
 
+import java.util.List;
+
 @Repository
 public interface SlideRepository extends JpaRepository<Slide, Long>{
-    Page<Slide> findAllBySectionId(Long sectionId, Pageable pageable);
+    List<Slide> findAllBySectionId(Long sectionId);
     boolean existsByTitle(String title);
 
     @Query("SELECT COUNT (p) FROM Slide p WHERE p.section.course.id = ?1")

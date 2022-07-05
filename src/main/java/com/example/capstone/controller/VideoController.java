@@ -19,13 +19,6 @@ public class VideoController {
     @Autowired
     private VideoService videoService;
 
-    @GetMapping("/videos")
-    public ResponseEntity<Object> getAllVideoBySectionId(@RequestParam(value = "sectionId") Long sectionId,
-                                                          @RequestParam("page") int page,
-                                                          @RequestParam("size") int size){
-        return videoService.getAllVideoBySectionId(sectionId,page,size);
-    }
-
     @GetMapping("/auth/video")
     public ResponseEntity<Object> getOneVideo(@RequestParam(value = "id") Long id, Principal principal) {
         if (principal != null){
