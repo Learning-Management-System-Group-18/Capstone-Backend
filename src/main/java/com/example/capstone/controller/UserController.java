@@ -20,6 +20,7 @@ public class UserController {
 
     @Autowired
     private UserProfileService userProfileService;
+
     //get user profile
     @GetMapping("/profile")
     public ResponseEntity<Object> getProfile(Principal principal) {

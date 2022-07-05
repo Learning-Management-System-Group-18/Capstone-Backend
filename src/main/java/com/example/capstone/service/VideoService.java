@@ -44,25 +44,6 @@ public class VideoService {
     @Autowired
     private VideoCompletedRepository videoCompletedRepository;
 
-    public ResponseEntity<Object> getAllVideoBySectionId(Long sectionId, int page, int size) {
-        log.info("Executing get all video");
-        try {
-            Pageable pageable = PageRequest.of(page-1,size);
-            Page<Video> videos = videoRepository.findAllBySectionId(sectionId,pageable);
-
-            List<VideoDto> request = new ArrayList<>();
-            for (Video video: videos){
-                VideoDto videoDto = mapper.map(video, VideoDto.class);
-                request.add(videoDto);
-            }
-            log.info("Successfully retrieved all video");
-            return ResponseUtil.build(ResponseCode.SUCCESS, request, HttpStatus.OK);
-        } catch (Exception e){
-            log.error("An error occurred while trying to get all video. Error : {}", e.getMessage());
-            return ResponseUtil.build(ResponseCode.UNKNOWN_ERROR, null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
     public ResponseEntity<Object> getVideoById(Long id, String email) {
         log.info("Executing get Video with ID : {}", id);
         try {

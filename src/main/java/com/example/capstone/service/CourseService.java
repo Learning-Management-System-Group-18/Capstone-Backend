@@ -61,9 +61,11 @@ public class CourseService {
             List<CourseDto> courseDtoList = new ArrayList<>();
 
             for (Course course: courses){
+                Integer countUser = orderRepository.countOrderByCourseId(course.getId());
                 Double rating = reviewRepository.averageOfCourseReviewRating(course.getId());
                 CourseDto courseDto = mapper.map(course, CourseDto.class);
                 courseDto.setRating(Objects.requireNonNullElse(rating,0.0));
+                courseDto.setCountUser(countUser);
                 courseDtoList.add(courseDto);
             }
             log.info("Successfully retrieved all course");
@@ -89,9 +91,11 @@ public class CourseService {
 
             List<CourseDto> request = new ArrayList<>();
             for (Course course: courseList){
+                Integer countUser = orderRepository.countOrderByCourseId(course.getId());
                 Double rating = reviewRepository.averageOfCourseReviewRating(course.getId());
                 CourseDto courseDto = mapper.map(course, CourseDto.class);
                 courseDto.setRating(Objects.requireNonNullElse(rating,0.0));
+                courseDto.setCountUser(countUser);
                 request.add(courseDto);
             }
             log.info("Successfully retrieved all course with pagination");

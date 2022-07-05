@@ -19,13 +19,6 @@ public class QuizController {
     @Autowired
     private QuizService quizService;
 
-    @GetMapping("/quizzes")
-    public ResponseEntity<Object> getAllQuizBySectionId(@RequestParam(value = "sectionId") Long sectionId,
-                                                         @RequestParam("page") int page,
-                                                         @RequestParam("size") int size){
-        return quizService.getAllQuizBySectionId(sectionId,page,size);
-    }
-
     @GetMapping("/auth/quiz")
     public ResponseEntity<Object> getOneQuiz(@RequestParam(value = "id") Long id,
                                              Principal principal) {

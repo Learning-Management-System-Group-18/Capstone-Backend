@@ -21,11 +21,9 @@ public class SectionController {
 
     @GetMapping("/content")
     public ResponseEntity<Object> getAllContentBySectionId(@RequestParam(value = "sectionId") Long sectionId,
-                                                           @RequestParam("page") int page,
-                                                           @RequestParam("size") int size,
                                                            Principal principal){
         if (principal != null){
-            return sectionService.getAllContentBySectionId(sectionId,page,size, principal.getName());
+            return sectionService.getAllContentBySectionId(sectionId, principal.getName());
         } else {
             return ResponseUtil.build(AppConstant.ResponseCode.NOT_LOGGED_IN,null, HttpStatus.FORBIDDEN);
         }
@@ -33,10 +31,8 @@ public class SectionController {
     }
 
     @GetMapping("/sections")
-    public ResponseEntity<Object> getAllSectionByCourseId(@RequestParam(value = "courseId") Long courseId,
-                                                @RequestParam("page") int page,
-                                                @RequestParam("size") int size){
-        return sectionService.getAllSectionByCourseId(courseId,page,size);
+    public ResponseEntity<Object> getAllSectionByCourseId(@RequestParam(value = "courseId") Long courseId){
+        return sectionService.getAllSectionByCourseId(courseId);
     }
 
     @GetMapping("/section")
