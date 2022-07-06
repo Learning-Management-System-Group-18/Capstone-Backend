@@ -52,6 +52,9 @@ public class OrderService {
     @Autowired
     private QuizCompletedRepository quizCompletedRepository;
 
+    @Autowired
+    private ReviewRepository reviewRepository;
+
 
     public ResponseEntity<Object> createOrder(Long courseId, String email) {
         try {
@@ -101,6 +104,7 @@ public class OrderService {
             List<Order> orderList = orderRepository.findOrderByUser(userOptional.get());
             List<OrderResponse> orderResponses = new ArrayList<>();
             for (Order order : orderList) {
+                Double rating = reviewRepository.averageOfCourseReviewRating(order.getCourse().getId());
                 OrderResponse response = mapper.map(order, OrderResponse.class);
                 Integer allVideo = videoRepository.countAllVideo(order.getCourse().getId());
                 Integer allSlide = slideRepository.countAllSlide(order.getCourse().getId());

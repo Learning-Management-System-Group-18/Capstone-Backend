@@ -33,6 +33,7 @@ public class Course extends BaseDAO {
 
     private String title;
 
+    @Column(columnDefinition = "text")
     private String description;
 
     @Enumerated(EnumType.STRING)
