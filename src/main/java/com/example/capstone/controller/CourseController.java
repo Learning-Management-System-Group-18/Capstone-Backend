@@ -58,7 +58,7 @@ public class CourseController {
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> updateImageCourse(@RequestParam(value = "id") Long id,
-                                                    @RequestParam("file") MultipartFile file){
+                                                    @RequestParam("image") MultipartFile file){
         return courseService.updateImageCourse(id,file);
 
     }
