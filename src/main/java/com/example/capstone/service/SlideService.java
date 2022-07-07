@@ -28,7 +28,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SlideService {
     @Autowired
-    SectionRepository sectionRepository;
+    private SectionRepository sectionRepository;
+
     @Autowired
     private ModelMapper mapper;
 
@@ -79,6 +80,12 @@ public class SlideService {
         log.info("Executing add new slide");
         try {
             Optional<Section> section = sectionRepository.findById(sectionId);
+            if (section.isEmpty()){
+                log.info("Section With Id {} not found",sectionId);
+                return ResponseUtil.build(AppConstant.ResponseCode.DATA_NOT_FOUND,
+                        null,
+                        HttpStatus.BAD_REQUEST);
+            }
             Slide slide = mapper.map(request, Slide.class);
             slide.setSection(section.get());
             slideRepository.save(slide);

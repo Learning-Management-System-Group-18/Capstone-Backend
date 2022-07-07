@@ -28,7 +28,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class QuizService {
     @Autowired
-    SectionRepository sectionRepository;
+    private SectionRepository sectionRepository;
+
     @Autowired
     private ModelMapper mapper;
 
@@ -117,6 +118,12 @@ public class QuizService {
         log.info("Executing add new quiz");
         try {
             Optional<Section> section = sectionRepository.findById(sectionId);
+            if (section.isEmpty()){
+                log.info("Section With Id {} not found",sectionId);
+                return ResponseUtil.build(AppConstant.ResponseCode.DATA_NOT_FOUND,
+                        null,
+                        HttpStatus.BAD_REQUEST);
+            }
             Quiz quiz = mapper.map(request, Quiz.class);
             quiz.setSection(section.get());
             quizRepository.save(quiz);

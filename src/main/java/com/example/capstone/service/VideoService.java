@@ -28,7 +28,8 @@ import lombok.extern.slf4j.Slf4j;
 public class VideoService {
     
     @Autowired
-    SectionRepository sectionRepository;
+    private SectionRepository sectionRepository;
+
     @Autowired
     private ModelMapper mapper;
 
@@ -79,6 +80,12 @@ public class VideoService {
         log.info("Executing add new video");
         try {
             Optional<Section> section = sectionRepository.findById(sectionId);
+            if (section.isEmpty()){
+                log.info("Section With Id {} not found",sectionId);
+                return ResponseUtil.build(AppConstant.ResponseCode.DATA_NOT_FOUND,
+                        null,
+                        HttpStatus.BAD_REQUEST);
+            }
             Video video = mapper.map(request, Video.class);
             video.setSection(section.get());
             videoRepository.save(video);

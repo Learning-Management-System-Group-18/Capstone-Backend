@@ -10,6 +10,7 @@ import com.example.capstone.domain.payload.request.RegisterRequest;
 import com.example.capstone.domain.payload.response.RegisterResponse;
 import com.example.capstone.domain.payload.response.TokenResponse;
 import com.example.capstone.repository.RoleRepository;
+import com.example.capstone.repository.UserProfileRepository;
 import com.example.capstone.repository.UserRepository;
 import com.example.capstone.security.JwtTokenProvider;
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -33,6 +36,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
@@ -40,6 +44,9 @@ import static org.mockito.Mockito.when;
 class AuthServiceTest {
     @MockBean
     private UserRepository userRepository;
+
+    @MockBean
+    private UserProfileRepository userProfileRepository;
 
     @MockBean
     private RoleRepository roleRepository;
@@ -80,7 +87,7 @@ class AuthServiceTest {
                 .build();
         Role role = new Role(1L, AppConstant.RoleType.ROLE_USER);
 
-        //Stubbing
+
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(passwordEncoder.encode(anyString())).thenReturn("hashed_password");
         when(modelMapper.map(any(),eq(User.class))).thenReturn(user);
@@ -92,7 +99,7 @@ class AuthServiceTest {
         ApiResponse apiResponse = ((ApiResponse) responseEntity.getBody());
 
 
-        //Verification
+
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals("ilham@gmail.com", ((RegisterResponse) apiResponse.getData()).getEmail());
         assertEquals("Ilham Hidayat", ((RegisterResponse) apiResponse.getData()).getFullName());
@@ -121,19 +128,24 @@ class AuthServiceTest {
     void generateTokenSuccess_Test() {
         LoginRequest request = new LoginRequest();
         request.setEmail("ilham@gmail.com");
-        request.setPassword("divel213");
+        request.setPassword("pass");
         Authentication authentication = new UsernamePasswordAuthenticationToken("uname", "password");
 
-        //stubbing
-        when(authenticationManager.authenticate(any())).thenReturn(authentication);
-        when(jwtTokenProvider.generateToken(any())).thenReturn("some_long_long_token");
 
+        when(authenticationManager.authenticate(any())).thenReturn(authentication);
+        when(jwtTokenProvider.generateToken(any())).thenReturn("token");
+        User user = mock(User.class);
+        Authentication authentication1 = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication1);
+        SecurityContextHolder.setContext(securityContext);
+        when(SecurityContextHolder.getContext().getAuthentication().getPrincipal()).thenReturn(user);
         ResponseEntity responseEntity = authService.generateToken(request);
         ApiResponse apiResponse = ((ApiResponse) responseEntity.getBody());
 
         //verification
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals("some_long_long_token", ((TokenResponse) apiResponse.getData()).getToken());
+        assertEquals("token", ((TokenResponse) apiResponse.getData()).getToken());
         assertTrue(((TokenResponse) apiResponse.getData()).getRole().isEmpty() );
     }
 

@@ -20,11 +20,6 @@ public class ReviewController {
     @Autowired
     private ReviewService reviewService;
 
-    @PostMapping("/review/search")
-    public ResponseEntity<Object> searchReview(@RequestBody SearchRequest request){
-        return reviewService.searchReview(request);
-    }
-
     @GetMapping("/review")
     public ResponseEntity<Object> getReviewByCourse(@RequestParam("courseId") Long courseId,
                                                     @RequestParam(value = "rating",required = false) Integer rating ,
