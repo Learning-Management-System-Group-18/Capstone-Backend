@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.example.capstone.constant.AppConstant;
 import com.example.capstone.domain.dao.*;
 import com.example.capstone.domain.dto.ContentDto;
 import com.example.capstone.domain.dto.CourseDto;
@@ -72,30 +73,25 @@ public class SectionService {
                 return ResponseUtil.build(ResponseCode.DATA_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
             }
 
-
             List<Slide> slides = slideRepository.findAllBySectionId(sectionId);
             List<Video> videos = videoRepository.findAllBySectionId(sectionId);
             List<Quiz> quizzes = quizRepository.findAllBySectionId(sectionId);
-
             ContentDto request = new ContentDto();
             List<VideoResponse> videoResponses = new ArrayList<>();
             List<QuizResponse> quizResponses = new ArrayList<>();
             List<SlideResponse> slideResponses = new ArrayList<>();
-
             for (Slide slide: slides){
                 SlideResponse slideResponse = mapper.map(slide, SlideResponse.class);
                 Boolean isCompleted = slideCompletedRepository.existsByUserIdAndSlideId(userOptional.get().getId(), slideResponse.getId());
                 slideResponse.setCompleted(isCompleted);
                 slideResponses.add(slideResponse);
             }
-
             for (Video video: videos){
                 VideoResponse videoResponse = mapper.map(video, VideoResponse.class);
                 Boolean isCompleted = videoCompletedRepository.existsByUserIdAndVideoId(userOptional.get().getId(), videoResponse.getId());
                 videoResponse.setCompleted(isCompleted);
                 videoResponses.add(videoResponse);
             }
-
             for (Quiz quiz: quizzes){
                 QuizResponse quizResponse = mapper.map(quiz, QuizResponse.class);
                 Boolean isCompleted = quizCompletedRepository.existsByUserIdAndQuizId(userOptional.get().getId(), quizResponse.getId());
@@ -105,7 +101,6 @@ public class SectionService {
             request.setQuiz(quizResponses);
             request.setSlide(slideResponses);
             request.setVideo(videoResponses);
-
             log.info("Successfully retrieved all content");
             return ResponseUtil.build(ResponseCode.SUCCESS, request, HttpStatus.OK);
         } catch (Exception e){
@@ -155,6 +150,12 @@ public class SectionService {
         log.info("Executing add new section");
         try {
             Optional<Course> course = courseRepository.findById(courseId);
+            if (course.isEmpty()){
+                log.info("Course With Id {} not found",courseId);
+                return ResponseUtil.build(AppConstant.ResponseCode.DATA_NOT_FOUND,
+                        null,
+                        HttpStatus.BAD_REQUEST);
+            }
             Section section = mapper.map(request, Section.class);
             section.setCourse(course.get());
             sectionRepository.save(section);

@@ -22,9 +22,9 @@ public class CourseController {
     @Autowired
     private CourseService courseService;
 
-    @PostMapping("/course/search")
-    public ResponseEntity<Object> searchCourse(@RequestBody SearchRequest request){
-        return courseService.searchCourses(request);
+    @GetMapping("/course/popular")
+    public ResponseEntity<Object> searchCourse(){
+        return courseService.popularCourse();
     }
 
     @GetMapping("/courses")

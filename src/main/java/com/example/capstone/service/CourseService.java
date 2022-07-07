@@ -32,13 +32,13 @@ import static org.apache.http.entity.ContentType.IMAGE_JPEG;
 
 @Service
 @Slf4j
-@AllArgsConstructor
 public class CourseService {
 
-    private final UploadFileService uploadFileService;
+    @Autowired
+    private UploadFileService uploadFileService;
 
     @Autowired
-    CategoryRepository categoryRepository;
+    private CategoryRepository categoryRepository;
     
     @Autowired
     private ModelMapper mapper;
@@ -53,13 +53,10 @@ public class CourseService {
     private OrderRepository orderRepository;
 
 
-    public ResponseEntity<Object> searchCourses(SearchRequest request){
+    public ResponseEntity<Object> popularCourse(){
         try {
-            SearchSpecification<Course> specification = new SearchSpecification<>(request);
-            Pageable pageable = SearchSpecification.getPageable(request.getPage()-1, request.getSize() );
-            Page<Course> courses = courseRepository.findAll(specification,pageable);
+            List<Course> courses = courseRepository.findAllByOrderByRatingDesc();
             List<CourseDto> courseDtoList = new ArrayList<>();
-
             for (Course course: courses){
                 Integer countUser = orderRepository.countOrderByCourseId(course.getId());
                 Double rating = reviewRepository.averageOfCourseReviewRating(course.getId());
@@ -68,7 +65,7 @@ public class CourseService {
                 courseDto.setCountUser(countUser);
                 courseDtoList.add(courseDto);
             }
-            log.info("Successfully retrieved all course");
+            log.info("Successfully retrieved popular course by rating ");
             return ResponseUtil.build(ResponseCode.SUCCESS, courseDtoList, HttpStatus.OK);
         } catch (Exception e){
             log.error("An error occurred while trying to get all course. Error : {}", e.getMessage());
