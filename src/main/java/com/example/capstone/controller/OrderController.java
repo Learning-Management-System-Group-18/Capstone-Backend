@@ -27,10 +27,19 @@ public class OrderController {
         }
     }
 
-    @GetMapping("/auth/order")
-    public ResponseEntity<Object> newOrder(Principal principal) {
+    @GetMapping("/auth/order/ongoing")
+    public ResponseEntity<Object> ongoingCourse(Principal principal) {
         if (principal != null){
-            return orderService.getOrderByUserId(principal.getName());
+            return orderService.getOrderByUserId(principal.getName(),"ongoing");
+        } else {
+            return ResponseUtil.build(AppConstant.ResponseCode.NOT_LOGGED_IN,null, HttpStatus.FORBIDDEN);
+        }
+    }
+
+    @GetMapping("/auth/order/completed")
+    public ResponseEntity<Object> completedCourse(Principal principal) {
+        if (principal != null){
+            return orderService.getOrderByUserId(principal.getName(), "completed");
         } else {
             return ResponseUtil.build(AppConstant.ResponseCode.NOT_LOGGED_IN,null, HttpStatus.FORBIDDEN);
         }
