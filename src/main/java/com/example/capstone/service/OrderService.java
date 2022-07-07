@@ -93,7 +93,7 @@ public class OrderService {
         }
     }
 
-    public ResponseEntity<Object> getOrderByUserId(String email){
+    public ResponseEntity<Object> getOrderByUserId(String email, String type){
         try {
             Optional<User> userOptional = userRepository.findUserByEmail(email);
             if (userOptional.isEmpty()){
@@ -113,7 +113,16 @@ public class OrderService {
                 Integer completedQuiz = quizCompletedRepository.countQuiz(userOptional.get().getId(), order.getCourse().getId());
                 response.setCountAll(allVideo + allSlide + allQuiz);
                 response.setCountCompleted(completedVideo + completedSlide + completedQuiz);
-                orderResponses.add(response);
+                if (type == "ongoing") {
+                    if (!((allVideo + allSlide + allQuiz)==(completedQuiz+completedSlide+completedVideo))){
+                        orderResponses.add(response);
+                    }
+
+                } else {
+                    if (((allVideo + allSlide + allQuiz)==(completedQuiz+completedSlide+completedVideo))){
+                        orderResponses.add(response);
+                    }
+                }
             }
             log.info("Successfully retrieved Order By user ");
             return ResponseUtil.build(AppConstant.ResponseCode.SUCCESS, orderResponses, HttpStatus.OK);

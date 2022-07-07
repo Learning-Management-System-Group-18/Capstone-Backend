@@ -194,7 +194,7 @@ class OrderServiceTest {
         when(slideCompletedRepository.countSlide(any(),any())).thenReturn(completedSlide);
         when(quizCompletedRepository.countQuiz(any(),any())).thenReturn(completedQuiz);
 
-        ResponseEntity<Object> responseEntity = orderService.getOrderByUserId("email");
+        ResponseEntity<Object> responseEntity = orderService.getOrderByUserId("email","ongoing");
         ApiResponse apiResponse = (ApiResponse) responseEntity.getBody();
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
@@ -204,14 +204,14 @@ class OrderServiceTest {
     @Test
     void getOrderByUserId_EmailEmpty() {
         when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.empty());
-        ResponseEntity<Object> responseEntity = orderService.getOrderByUserId("email");
+        ResponseEntity<Object> responseEntity = orderService.getOrderByUserId("email","ongoing");
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
     }
 
     @Test
     void getOrderByUserId_Error() {
         when(userRepository.findUserByEmail(anyString())).thenThrow(NullPointerException.class);
-        ResponseEntity<Object> responseEntity = orderService.getOrderByUserId("email");
+        ResponseEntity<Object> responseEntity = orderService.getOrderByUserId("email","ongoing");
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
     }
 
