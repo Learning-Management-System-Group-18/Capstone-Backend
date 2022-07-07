@@ -54,7 +54,7 @@ public class CategoryService {
     public ResponseEntity<Object> getCategory(Integer page, Integer size) {
         log.info("Executing get all category with pagination");
         try {
-            Pageable pageable = PageRequest.of(page-1,size);
+            Pageable pageable = PageRequest.of(page,size);
 
             Page<Category> categoryList = categoryRepository.findAll(pageable);
 
@@ -133,17 +133,11 @@ public class CategoryService {
             );
         }
         try {
+
             //check if the file is empty
             if (file.isEmpty()) {
-                throw new IllegalStateException("Cannot upload empty file");
-            }
-
-            //check if the file is an image
-            if (!Arrays.asList(IMAGE_PNG.getMimeType(),
-                    IMAGE_BMP.getMimeType(),
-                    IMAGE_GIF.getMimeType(),
-                    IMAGE_JPEG.getMimeType()).contains(file.getContentType())) {
-                throw new IllegalStateException("FIle uploaded is not an image");
+                log.info("Cannot upload empty file");
+                return ResponseUtil.build(ResponseCode.IMAGE_EMPTY,null,HttpStatus.BAD_REQUEST);
             }
 
             //get file metadata
