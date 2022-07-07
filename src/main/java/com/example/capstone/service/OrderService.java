@@ -104,7 +104,6 @@ public class OrderService {
             List<Order> orderList = orderRepository.findOrderByUser(userOptional.get());
             List<OrderResponse> orderResponses = new ArrayList<>();
             for (Order order : orderList) {
-                Double rating = reviewRepository.averageOfCourseReviewRating(order.getCourse().getId());
                 OrderResponse response = mapper.map(order, OrderResponse.class);
                 Integer allVideo = videoRepository.countAllVideo(order.getCourse().getId());
                 Integer allSlide = slideRepository.countAllSlide(order.getCourse().getId());
@@ -117,9 +116,7 @@ public class OrderService {
                 orderResponses.add(response);
             }
             log.info("Successfully retrieved Order By user ");
-            return ResponseUtil.build(AppConstant.ResponseCode.SUCCESS,
-                    orderResponses,
-                    HttpStatus.OK);
+            return ResponseUtil.build(AppConstant.ResponseCode.SUCCESS, orderResponses, HttpStatus.OK);
         } catch (Exception e){
             log.error("Error occurred while trying to get order by User {}",e.getMessage());
             return ResponseUtil.build(AppConstant.ResponseCode.UNKNOWN_ERROR, null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -134,16 +131,11 @@ public class OrderService {
                 OrderDto request = mapper.map(order, OrderDto.class);
                 orderDto.add(request);
             }
-
             log.info("Successfully retrieved All Order");
-            return ResponseUtil.build(AppConstant.ResponseCode.SUCCESS,
-                    orderDto,
-                    HttpStatus.OK);
+            return ResponseUtil.build(AppConstant.ResponseCode.SUCCESS, orderDto, HttpStatus.OK);
         } catch (Exception e) {
             log.error("Error occurred while trying to get all order {}",e.getMessage());
             return ResponseUtil.build(AppConstant.ResponseCode.UNKNOWN_ERROR, null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-
 }

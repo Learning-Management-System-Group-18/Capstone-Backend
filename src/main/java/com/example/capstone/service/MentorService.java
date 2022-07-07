@@ -58,15 +58,8 @@ public class MentorService {
         log.info("Executing add new mentor");
         try {
             if (file.isEmpty()) {
-                throw new IllegalStateException("Cannot upload empty file");
-            }
-
-            //check if the file is an image
-            if (!Arrays.asList(IMAGE_PNG.getMimeType(),
-                    IMAGE_BMP.getMimeType(),
-                    IMAGE_GIF.getMimeType(),
-                    IMAGE_JPEG.getMimeType()).contains(file.getContentType())) {
-                throw new IllegalStateException("FIle uploaded is not an image");
+                log.info("Cannot upload empty file");
+                return ResponseUtil.build(AppConstant.ResponseCode.IMAGE_EMPTY,null,HttpStatus.BAD_REQUEST);
             }
 
             //get file metadata

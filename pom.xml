@@ -133,8 +133,9 @@
                         <exclude>**/domain/**/*</exclude>
                         <exclude>**/repository/*</exclude>
                         <exclude>**/constant/*</exclude>
-                        <exclude>**/BookingApplication.class</exclude>
+                        <exclude>**/CapstoneApplication.class</exclude>
                         <exclude>**/config/**</exclude>
+                        <exclude>**/security/**</exclude>
                         <exclude>**/controller/**</exclude>
                     </excludes>
                 </configuration>

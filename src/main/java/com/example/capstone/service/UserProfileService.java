@@ -122,14 +122,6 @@ public class UserProfileService {
                 return ResponseUtil.build(AppConstant.ResponseCode.DATA_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
             }
 
-            //check if the file is an image
-            if (!Arrays.asList(IMAGE_PNG.getMimeType(),
-                    IMAGE_BMP.getMimeType(),
-                    IMAGE_GIF.getMimeType(),
-                    IMAGE_JPEG.getMimeType()).contains(file.getContentType())) {
-                throw new IllegalStateException("FIle uploaded is not an image");
-            }
-
             //get file metadata
             Map<String, String> metadata = new HashMap<>();
             metadata.put("Content-Type", file.getContentType());

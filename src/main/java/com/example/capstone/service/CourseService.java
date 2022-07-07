@@ -76,7 +76,7 @@ public class CourseService {
     public ResponseEntity<Object> getCourse(Long categoryId, Integer page, Integer size) {
         log.info("Executing get all course with pagination");
         try {
-            Pageable pageable = PageRequest.of(page-1,size);
+            Pageable pageable = PageRequest.of(page,size);
             Page<Course> courseList;
             if (categoryId == null ) {
                 log.info("Category Id is null. Getting all course with pagination");
@@ -206,14 +206,6 @@ public class CourseService {
                 return ResponseUtil.build(ResponseCode.DATA_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
             }
 
-            //check if the file is an image
-            if (!Arrays.asList(IMAGE_PNG.getMimeType(),
-                    IMAGE_BMP.getMimeType(),
-                    IMAGE_GIF.getMimeType(),
-                    IMAGE_JPEG.getMimeType()).contains(file.getContentType())) {
-                throw new IllegalStateException("FIle uploaded is not an image");
-            }
-
             //get file metadata
             Map<String, String> metadata = new HashMap<>();
             metadata.put("Content-Type", file.getContentType());
@@ -236,7 +228,7 @@ public class CourseService {
                 courseRepository.save(course);
             });
 
-            log.info("Succesfully updated Course Image with Id : [{}]",id);
+            log.info("Successfully updated Course Image with Id : [{}]",id);
             return ResponseUtil.build(ResponseCode.SUCCESS,mapper.map(optionalCourse.get(),CourseDto.class),HttpStatus.OK);
         } catch (Exception e) {
             log.info("An error occurred while trying to update existing Course Image. Error : {}", e.getMessage());

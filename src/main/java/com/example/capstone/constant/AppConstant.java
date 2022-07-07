@@ -13,6 +13,7 @@ public class AppConstant {
 
         SUCCESS("SUCCESS", "Success!"),
         DATA_NOT_FOUND("DATA_NOT_FOUND", "Data not found!"),
+        IMAGE_EMPTY("IMAGE_EMPTY", "Image Empty!"),
         UNKNOWN_ERROR("UNKNOWN_ERROR", "Happened unknown error!"),
         BAD_CREDENTIALS("BAD_CREDENTIALS", "Provided Credentials is bad!"),
         NOT_LOGGED_IN("NOT_LOGGED_IN", "Login first to access this endpoint"),
