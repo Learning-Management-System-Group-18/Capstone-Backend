@@ -217,10 +217,7 @@ class CategoryServiceTest {
                 "some-name",
                 MediaType.TEXT_PLAIN_VALUE,
                 "think of this as image".getBytes());
-
-
         when(categoryRepository.existsByTitle(anyString())).thenReturn(exist);
-
         when(mapper.map(any(),eq(Category.class))).thenReturn(category);
         when(categoryRepository.save(any())).thenReturn(category);
         when(mapper.map(any(),eq(CategoryDto.class))).thenReturn(categoryDto);
@@ -228,6 +225,7 @@ class CategoryServiceTest {
         ResponseEntity<Object> responseEntity = categoryService.createNewCategory(categoryDto,file);
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        verify(uploadFileService,times(1)).upload(any(),any(),any(),any());
 
 
     }
@@ -252,30 +250,6 @@ class CategoryServiceTest {
 
     }
 
-    @Test
-    void createNewCategory_FileEmpty() {
-//        CategoryDto categoryDto = CategoryDto.builder()
-//                .id(1L)
-//                .title("title")
-//                .build();
-//
-//        MockMultipartFile file = new MockMultipartFile(
-//                "name",
-//                "some-name",
-//                MediaType.TEXT_PLAIN_VALUE,
-//                "think of this as image".getBytes());
-//
-//        when(file.isEmpty()).then(NullPointerException.class);
-//        ResponseEntity<Object> responseEntity = categoryService.createNewCategory(categoryDto,file);
-//        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
-
-
-
-    }
-
-    @Test
-    void createNewCategory_FileNotImage() {
-    }
 
     @Test
     void createNewCategory_Error() {
@@ -296,5 +270,124 @@ class CategoryServiceTest {
 
     }
 
+    @Test
+    void updateByIdWithImage_Success() {
+        Category category = Category.builder()
+                .id(1L)
+                .title("title")
+                .build();
 
+        CategoryDto categoryDto = CategoryDto.builder()
+                .id(1L)
+                .title("title")
+                .build();
+
+        MockMultipartFile file = new MockMultipartFile(
+                "name",
+                "some-name",
+                MediaType.TEXT_PLAIN_VALUE,
+                "think of this as image".getBytes());
+
+        when(categoryRepository.findById(anyLong())).thenReturn(Optional.of(category));
+        when(categoryRepository.save(any())).thenReturn(category);
+        when(mapper.map(any(),eq(CategoryDto.class))).thenReturn(categoryDto);
+
+        ResponseEntity<Object> responseEntity = categoryService.updateById(1L,categoryDto,file);
+
+        verify(uploadFileService,times(1)).delete(any(),any());
+        verify(uploadFileService,times(1)).upload(any(),any(),any(),any());
+
+    }
+
+    @Test
+    void updateByIdWithoutImage_Success() {
+        Category category = Category.builder()
+                .id(1L)
+                .title("title")
+                .build();
+
+        CategoryDto categoryDto = CategoryDto.builder()
+                .id(1L)
+                .title("title")
+                .build();
+
+        MockMultipartFile file = null;
+
+        when(categoryRepository.findById(anyLong())).thenReturn(Optional.of(category));
+        when(categoryRepository.save(any())).thenReturn(category);
+        when(mapper.map(any(),eq(CategoryDto.class))).thenReturn(categoryDto);
+
+        ResponseEntity<Object> responseEntity = categoryService.updateById(1L,categoryDto,file);
+
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+
+
+    }
+
+    @Test
+    void updateById_IdNotFound() {
+        CategoryDto categoryDto = CategoryDto.builder()
+                .id(1L)
+                .title("title")
+                .build();
+
+        MockMultipartFile file = new MockMultipartFile(
+                "name",
+                "some-name",
+                MediaType.TEXT_PLAIN_VALUE,
+                "think of this as image".getBytes());
+
+        when(categoryRepository.findById(anyLong())).thenReturn(Optional.empty());
+        ResponseEntity<Object> responseEntity = categoryService.updateById(1L,categoryDto,file);
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+    }
+
+    @Test
+    void updateById_Error() {
+        CategoryDto categoryDto = CategoryDto.builder()
+                .id(1L)
+                .title("title")
+                .build();
+
+        MockMultipartFile file = new MockMultipartFile(
+                "name",
+                "some-name",
+                MediaType.TEXT_PLAIN_VALUE,
+                "think of this as image".getBytes());
+        when(categoryRepository.findById(anyLong())).thenThrow(NullPointerException.class);
+        ResponseEntity<Object> responseEntity = categoryService.updateById(1L,categoryDto,file);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+
+    }
+
+    @Test
+    void deleteById_Success() {
+        Category category = Category.builder()
+                .id(1L)
+                .title("title")
+                .build();
+
+
+        when(categoryRepository.findById(anyLong())).thenReturn(Optional.of(category));
+
+        ResponseEntity<Object> responseEntity = categoryService.deleteById(anyLong());
+
+        verify(uploadFileService, times(1)).delete(any(),any());
+        verify(categoryRepository, times(1)).delete(category);
+
+    }
+
+    @Test
+    void deleteById_IdNotFound() {
+        when(categoryRepository.findById(anyLong())).thenReturn(Optional.empty());
+        ResponseEntity<Object> responseEntity = categoryService.deleteById(anyLong());
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+    }
+
+    @Test
+    void deleteById_Error() {
+        when(categoryRepository.findById(anyLong())).thenThrow(NullPointerException.class);
+        ResponseEntity<Object> responseEntity = categoryService.deleteById(anyLong());
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+    }
 }

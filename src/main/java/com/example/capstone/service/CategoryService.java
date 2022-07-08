@@ -185,7 +185,6 @@ public class CategoryService {
                     category.setDescription(request.getDescription());
                     categoryRepository.save(category);
                 });
-
                 log.info("Successfully updated category without image with Id : [{}]",id);
             } else {
                 log.info("File is not null, updated course with file");
