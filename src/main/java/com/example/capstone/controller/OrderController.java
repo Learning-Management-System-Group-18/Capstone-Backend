@@ -46,7 +46,7 @@ public class OrderController {
 
     }
 
-    @GetMapping("/orders")
+    @GetMapping("/auth/orders")
     public ResponseEntity<Object> getAllOrder(){
         return orderService.getAllOrders();
     }

@@ -21,8 +21,7 @@ public class UserController {
     @Autowired
     private UserProfileService userProfileService;
 
-    //get user profile
-    @GetMapping("/profile")
+    @GetMapping("/auth/profile")
     public ResponseEntity<Object> getProfile(Principal principal) {
         if (principal != null) {
             return userProfileService.getProfileByEmail(principal.getName());
@@ -31,7 +30,7 @@ public class UserController {
         }
     }
 
-    @PutMapping("/profile")
+    @PutMapping("/auth/profile")
     public ResponseEntity<Object> updateProfile(@RequestBody UserProfileDto request,
                                                 Principal principal) {
         if (principal != null) {
