@@ -33,10 +33,10 @@ public class CategoryDto {
     @JsonIgnore
     private String imageFileName;
 
-    @ColumnDefault("0")
-    private Integer countCourse = 0;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Integer countCourse ;
 
-    @ColumnDefault("0")
-    private Integer countUser = 0;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Integer countUser ;
 
 }

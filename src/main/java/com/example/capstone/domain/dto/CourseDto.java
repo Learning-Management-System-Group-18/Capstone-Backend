@@ -22,21 +22,17 @@ import lombok.NoArgsConstructor;
 public class CourseDto {
     private Long id;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String title;
 
     private double rating;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String description;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private AppConstant.Level level;
 
     @JsonIgnore
     private String urlBucket;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String urlImage;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
