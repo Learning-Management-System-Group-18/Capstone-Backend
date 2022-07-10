@@ -51,10 +51,10 @@ public class ReviewService {
             Page<Review> reviews;
             if (rating == null) {
                 log.info("Rating is null. Getting all reviews");
-                reviews = reviewRepository.findAllByCourseId(courseId, pageable);
+                reviews = reviewRepository.findAllByCourseIdAndCourseIsDeletedFalse(courseId, pageable);
             } else {
                 log.info("Rating is not null. Getting reviews by rating");
-                reviews = reviewRepository.findAllByCourseIdAndRating(courseId,rating,pageable);
+                reviews = reviewRepository.findAllByCourseIdAndRatingAndCourseIsDeletedFalse(courseId,rating,pageable);
             }
 
             List<ReviewDto> reviewRequests = new ArrayList<>();
@@ -89,6 +89,8 @@ public class ReviewService {
                         null,
                         HttpStatus.BAD_REQUEST);
             }
+
+
 
             Optional<Course> optionalCourse = courseRepository.findById(courseId);
             if(optionalCourse.isEmpty()) {

@@ -65,7 +65,7 @@ class ReviewServiceTest {
         Pageable pageable = PageRequest.of(0, 1);
         Page<Review> reviewPage = new PageImpl<Review>(reviews.subList(0,1), pageable, reviews.size());
 
-        when(reviewRepository.findAllByCourseId(anyLong(), any(Pageable.class))).thenReturn(reviewPage);
+        when(reviewRepository.findAllByCourseIdAndCourseIsDeletedFalse(anyLong(), any(Pageable.class))).thenReturn(reviewPage);
         when(mapper.map(any(), eq(ReviewDto.class))).thenReturn(reviewDto);
 
         ResponseEntity<Object> responseEntity = reviewService.getReviewByCourseId(1L,null,0,1);
@@ -96,7 +96,7 @@ class ReviewServiceTest {
         Pageable pageable = PageRequest.of(0, 1);
         Page<Review> reviewPage = new PageImpl<Review>(reviews.subList(0,1), pageable, reviews.size());
 
-        when(reviewRepository.findAllByCourseIdAndRating(anyLong(),anyInt(), any(Pageable.class))).thenReturn(reviewPage);
+        when(reviewRepository.findAllByCourseIdAndRatingAndCourseIsDeletedFalse(anyLong(),anyInt(), any(Pageable.class))).thenReturn(reviewPage);
         when(mapper.map(any(), eq(ReviewDto.class))).thenReturn(reviewDto);
 
         ResponseEntity<Object> responseEntity = reviewService.getReviewByCourseId(1L,3,0,1);
@@ -113,7 +113,7 @@ class ReviewServiceTest {
 
     @Test
     void getReview_Error(){
-        when(reviewRepository.findAllByCourseId(anyLong(), any(Pageable.class))).thenThrow(NullPointerException.class);
+        when(reviewRepository.findAllByCourseIdAndCourseIsDeletedFalse(anyLong(), any(Pageable.class))).thenThrow(NullPointerException.class);
 
         ResponseEntity<Object> responseEntity = reviewService.getReviewByCourseId(1L,null, 0,1);
 
