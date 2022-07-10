@@ -43,8 +43,9 @@ public class CourseController {
     }
 
     @PostMapping(path = "/admin/course")
-    public ResponseEntity<Object> createNewCourse(@RequestParam(value = "categoryId") Long categoryId){
-        return courseService.NewCourse(categoryId);
+    public ResponseEntity<Object> createNewCourse(@RequestParam(value = "categoryId") Long categoryId,
+                                                  @RequestBody CourseDto request){
+        return courseService.NewCourse(categoryId,request);
     }
 
     @PutMapping( path = "/admin/course")
