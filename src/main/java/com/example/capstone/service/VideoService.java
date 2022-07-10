@@ -1,18 +1,12 @@
 package com.example.capstone.service;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import com.example.capstone.constant.AppConstant;
 import com.example.capstone.domain.dao.*;
-import com.example.capstone.domain.dto.UserProfileDto;
 import com.example.capstone.repository.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -60,7 +54,7 @@ public class VideoService {
             }
 
             Course course = video.get().getSection().getCourse();
-            if (orderRepository.existsByCourseIdAndUserId(course.getId(),userOptional.get().getId())){
+            if (orderRepository.existsByCourseIdAndUserIdAndCourseIsDeletedFalse(course.getId(),userOptional.get().getId())){
                 VideoDto request = mapper.map(video, VideoDto.class);
                 Boolean isCompleted = videoCompletedRepository.existsByUserIdAndVideoId(userOptional.get().getId(),id);
                 request.setCompleted(isCompleted);
@@ -114,7 +108,7 @@ public class VideoService {
 
             Course course = optionalVideo.get().getSection().getCourse();
 
-            if(!orderRepository.existsByCourseIdAndUserId(course.getId(),userOptional.get().getId())){
+            if(!orderRepository.existsByCourseIdAndUserIdAndCourseIsDeletedFalse(course.getId(),userOptional.get().getId())){
                 return ResponseUtil.build(ResponseCode.NOT_ENROLL,null,HttpStatus.FORBIDDEN);
             }
 

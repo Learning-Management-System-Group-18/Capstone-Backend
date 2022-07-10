@@ -101,7 +101,7 @@ public class OrderService {
                 return ResponseUtil.build(AppConstant.ResponseCode.DATA_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
             }
 
-            List<Order> orderList = orderRepository.findOrderByUser(userOptional.get());
+            List<Order> orderList = orderRepository.findOrderByUserAndCourseIsDeletedFalse(userOptional.get());
             List<OrderResponse> orderResponses = new ArrayList<>();
             for (Order order : orderList) {
                 OrderResponse response = mapper.map(order, OrderResponse.class);
