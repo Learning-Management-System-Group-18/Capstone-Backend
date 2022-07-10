@@ -1,16 +1,12 @@
 package com.example.capstone.service;
 
-import com.amazonaws.services.dynamodbv2.xspec.S;
 import com.example.capstone.constant.AppConstant;
 import com.example.capstone.domain.common.ApiResponse;
 import com.example.capstone.domain.dao.*;
 import com.example.capstone.domain.dto.SlideDto;
-import com.example.capstone.domain.dto.VideoDto;
 import com.example.capstone.repository.*;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -90,7 +86,7 @@ class SlideServiceTest {
 
         when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.of(user));
         when(slideRepository.findById(anyLong())).thenReturn(Optional.of(slide));
-        when(orderRepository.existsByCourseIdAndUserId(anyLong(),anyLong())).thenReturn(order);
+        when(orderRepository.existsByCourseIdAndUserIdAndCourseIsDeletedFalse(anyLong(),anyLong())).thenReturn(order);
         when(mapper.map(any(), eq(SlideDto.class))).thenReturn(slideDto);
         when(slideCompletedRepository.existsByUserIdAndSlideId(anyLong(),anyLong())).thenReturn(isCompleted);
 
@@ -140,7 +136,7 @@ class SlideServiceTest {
 
         when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.of(user));
         when(slideRepository.findById(anyLong())).thenReturn(Optional.of(slide));
-        when(orderRepository.existsByCourseIdAndUserId(anyLong(),anyLong())).thenReturn(order);
+        when(orderRepository.existsByCourseIdAndUserIdAndCourseIsDeletedFalse(anyLong(),anyLong())).thenReturn(order);
         when(mapper.map(any(), eq(SlideDto.class))).thenReturn(slideDto);
         when(slideCompletedRepository.existsByUserIdAndSlideId(anyLong(),anyLong())).thenReturn(isCompleted);
 
@@ -206,7 +202,7 @@ class SlideServiceTest {
 
         when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.of(user));
         when(slideRepository.findById(anyLong())).thenReturn(Optional.of(slide));
-        when(orderRepository.existsByCourseIdAndUserId(anyLong(),anyLong())).thenReturn(order);
+        when(orderRepository.existsByCourseIdAndUserIdAndCourseIsDeletedFalse(anyLong(),anyLong())).thenReturn(order);
 
         ResponseEntity responseEntity = slideService.completeSlide(1L,"email");
 
@@ -332,7 +328,7 @@ class SlideServiceTest {
 
         when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.of(user));
         when(slideRepository.findById(anyLong())).thenReturn(Optional.of(slide));
-        when(orderRepository.existsByCourseIdAndUserId(anyLong(),anyLong())).thenReturn(order);
+        when(orderRepository.existsByCourseIdAndUserIdAndCourseIsDeletedFalse(anyLong(),anyLong())).thenReturn(order);
         when(mapper.map(any(), eq(SlideDto.class))).thenReturn(slideDto);
         when(slideCompletedRepository.existsByUserIdAndSlideId(anyLong(),anyLong())).thenReturn(isCompleted);
 
@@ -409,7 +405,7 @@ class SlideServiceTest {
 
         when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.of(user));
         when(slideRepository.findById(anyLong())).thenReturn(Optional.of(slide));
-        when(orderRepository.existsByCourseIdAndUserId(anyLong(),anyLong())).thenReturn(order);
+        when(orderRepository.existsByCourseIdAndUserIdAndCourseIsDeletedFalse(anyLong(),anyLong())).thenReturn(order);
         when(mapper.map(any(), eq(SlideDto.class))).thenReturn(slideDto);
 
 

@@ -4,12 +4,9 @@ import com.example.capstone.constant.AppConstant;
 import com.example.capstone.domain.common.ApiResponse;
 import com.example.capstone.domain.dao.*;
 import com.example.capstone.domain.dto.QuizDto;
-import com.example.capstone.domain.dto.SlideDto;
-import com.example.capstone.domain.dto.VideoDto;
 import com.example.capstone.repository.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -90,7 +87,7 @@ class QuizServiceTest {
 
         when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.of(user));
         when(quizRepository.findById(anyLong())).thenReturn(Optional.of(quiz));
-        when(orderRepository.existsByCourseIdAndUserId(anyLong(),anyLong())).thenReturn(order);
+        when(orderRepository.existsByCourseIdAndUserIdAndCourseIsDeletedFalse(anyLong(),anyLong())).thenReturn(order);
         when(mapper.map(any(), eq(QuizDto.class))).thenReturn(quizDto);
         when(quizCompletedRepository.existsByUserIdAndQuizId(anyLong(),anyLong())).thenReturn(isCompleted);
 
@@ -139,7 +136,7 @@ class QuizServiceTest {
 
         when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.of(user));
         when(quizRepository.findById(anyLong())).thenReturn(Optional.of(quiz));
-        when(orderRepository.existsByCourseIdAndUserId(anyLong(),anyLong())).thenReturn(order);
+        when(orderRepository.existsByCourseIdAndUserIdAndCourseIsDeletedFalse(anyLong(),anyLong())).thenReturn(order);
         when(mapper.map(any(), eq(QuizDto.class))).thenReturn(quizDto);
         when(quizCompletedRepository.existsByUserIdAndQuizId(anyLong(),anyLong())).thenReturn(isCompleted);
 
@@ -206,7 +203,7 @@ class QuizServiceTest {
 
         when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.of(user));
         when(quizRepository.findById(anyLong())).thenReturn(Optional.of(quiz));
-        when(orderRepository.existsByCourseIdAndUserId(anyLong(),anyLong())).thenReturn(order);
+        when(orderRepository.existsByCourseIdAndUserIdAndCourseIsDeletedFalse(anyLong(),anyLong())).thenReturn(order);
 
         ResponseEntity responseEntity = quizService.completeQuiz(1L,"email");
 
@@ -332,7 +329,7 @@ class QuizServiceTest {
 
         when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.of(user));
         when(quizRepository.findById(anyLong())).thenReturn(Optional.of(quiz));
-        when(orderRepository.existsByCourseIdAndUserId(anyLong(),anyLong())).thenReturn(order);
+        when(orderRepository.existsByCourseIdAndUserIdAndCourseIsDeletedFalse(anyLong(),anyLong())).thenReturn(order);
         when(mapper.map(any(), eq(QuizDto.class))).thenReturn(quizDto);
         when(quizCompletedRepository.existsByUserIdAndQuizId(anyLong(),anyLong())).thenReturn(isCompleted);
 
@@ -410,7 +407,7 @@ class QuizServiceTest {
 
         when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.of(user));
         when(quizRepository.findById(anyLong())).thenReturn(Optional.of(quiz));
-        when(orderRepository.existsByCourseIdAndUserId(anyLong(),anyLong())).thenReturn(order);
+        when(orderRepository.existsByCourseIdAndUserIdAndCourseIsDeletedFalse(anyLong(),anyLong())).thenReturn(order);
         when(mapper.map(any(), eq(QuizDto.class))).thenReturn(quizDto);
 
 

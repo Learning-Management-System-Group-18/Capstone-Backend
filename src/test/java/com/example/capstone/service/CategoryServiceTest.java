@@ -9,8 +9,6 @@ import com.example.capstone.repository.CourseRepository;
 import com.example.capstone.repository.OrderRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,7 +22,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.io.IOException;
@@ -81,7 +78,7 @@ class CategoryServiceTest {
         Page<Category> categoryPage = new PageImpl<Category>(categoryList.subList(0,1), pageable, categoryList.size());
 
         when(categoryRepository.findAll(any(Pageable.class))).thenReturn(categoryPage);
-        when(orderRepository.countOrderByCourse_CategoryId(anyLong())).thenReturn(countUser);
+        when(orderRepository.countOrderByCourse_CategoryIdAndCourseIsDeletedFalse(anyLong())).thenReturn(countUser);
         when(courseRepository.countCourseByCategoryId(anyLong())).thenReturn(countCourse);
         when(mapper.map(any(),eq(CategoryDto.class))).thenReturn(categoryDto);
 
@@ -129,7 +126,7 @@ class CategoryServiceTest {
                 .build();
 
         when(categoryRepository.findAll()).thenReturn(categoryList);
-        when(orderRepository.countOrderByCourse_CategoryId(anyLong())).thenReturn(countUser);
+        when(orderRepository.countOrderByCourse_CategoryIdAndCourseIsDeletedFalse(anyLong())).thenReturn(countUser);
         when(courseRepository.countCourseByCategoryId(anyLong())).thenReturn(countCourse);
         when(mapper.map(any(),eq(CategoryDto.class))).thenReturn(categoryDto);
 

@@ -5,7 +5,6 @@ import com.example.capstone.domain.dao.Course;
 import com.example.capstone.domain.dao.Order;
 import com.example.capstone.domain.dao.User;
 import com.example.capstone.domain.dto.CourseDto;
-import com.example.capstone.domain.dto.MentorDto;
 import com.example.capstone.domain.dto.OrderDto;
 import com.example.capstone.domain.payload.response.OrderResponse;
 import com.example.capstone.domain.payload.response.RegisterResponse;
@@ -185,7 +184,7 @@ class OrderServiceTest {
 
 
         when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.of(user));
-        when(orderRepository.findOrderByUser(any())).thenReturn(orderList);
+        when(orderRepository.findOrderByUserAndCourseIsDeletedFalse(any())).thenReturn(orderList);
         when(mapper.map(any(), eq(OrderResponse.class))).thenReturn(response);
         when(videoRepository.countAllVideo(any())).thenReturn(allVideo);
         when(slideRepository.countAllSlide(any())).thenReturn(allSlide);

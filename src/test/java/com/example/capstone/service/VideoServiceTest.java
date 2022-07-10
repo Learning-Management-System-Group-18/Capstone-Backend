@@ -3,14 +3,10 @@ package com.example.capstone.service;
 import com.example.capstone.constant.AppConstant;
 import com.example.capstone.domain.common.ApiResponse;
 import com.example.capstone.domain.dao.*;
-import com.example.capstone.domain.dto.SectionDto;
-import com.example.capstone.domain.dto.SlideDto;
 import com.example.capstone.domain.dto.VideoDto;
 import com.example.capstone.repository.*;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,8 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -94,7 +88,7 @@ class VideoServiceTest {
 
         when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.of(user));
         when(videoRepository.findById(anyLong())).thenReturn(Optional.of(video));
-        when(orderRepository.existsByCourseIdAndUserId(anyLong(),anyLong())).thenReturn(order);
+        when(orderRepository.existsByCourseIdAndUserIdAndCourseIsDeletedFalse(anyLong(),anyLong())).thenReturn(order);
         when(mapper.map(any(), eq(VideoDto.class))).thenReturn(videoDto);
         when(videoCompletedRepository.existsByUserIdAndVideoId(anyLong(),anyLong())).thenReturn(isCompleted);
 
@@ -144,7 +138,7 @@ class VideoServiceTest {
 
         when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.of(user));
         when(videoRepository.findById(anyLong())).thenReturn(Optional.of(video));
-        when(orderRepository.existsByCourseIdAndUserId(anyLong(),anyLong())).thenReturn(order);
+        when(orderRepository.existsByCourseIdAndUserIdAndCourseIsDeletedFalse(anyLong(),anyLong())).thenReturn(order);
         when(mapper.map(any(), eq(VideoDto.class))).thenReturn(videoDto);
         when(videoCompletedRepository.existsByUserIdAndVideoId(anyLong(),anyLong())).thenReturn(isCompleted);
 
@@ -212,7 +206,7 @@ class VideoServiceTest {
 
         when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.of(user));
         when(videoRepository.findById(anyLong())).thenReturn(Optional.of(video));
-        when(orderRepository.existsByCourseIdAndUserId(anyLong(),anyLong())).thenReturn(order);
+        when(orderRepository.existsByCourseIdAndUserIdAndCourseIsDeletedFalse(anyLong(),anyLong())).thenReturn(order);
 
         ResponseEntity responseEntity = videoService.completeVideo(1L,"email");
 
@@ -338,7 +332,7 @@ class VideoServiceTest {
 
         when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.of(user));
         when(videoRepository.findById(anyLong())).thenReturn(Optional.of(video));
-        when(orderRepository.existsByCourseIdAndUserId(anyLong(),anyLong())).thenReturn(order);
+        when(orderRepository.existsByCourseIdAndUserIdAndCourseIsDeletedFalse(anyLong(),anyLong())).thenReturn(order);
         when(mapper.map(any(), eq(VideoDto.class))).thenReturn(videoDto);
         when(videoCompletedRepository.existsByUserIdAndVideoId(anyLong(),anyLong())).thenReturn(isCompleted);
 
@@ -416,7 +410,7 @@ class VideoServiceTest {
 
         when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.of(user));
         when(videoRepository.findById(anyLong())).thenReturn(Optional.of(video));
-        when(orderRepository.existsByCourseIdAndUserId(anyLong(),anyLong())).thenReturn(order);
+        when(orderRepository.existsByCourseIdAndUserIdAndCourseIsDeletedFalse(anyLong(),anyLong())).thenReturn(order);
         when(mapper.map(any(), eq(VideoDto.class))).thenReturn(videoDto);
 
 

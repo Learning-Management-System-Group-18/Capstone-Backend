@@ -2,21 +2,15 @@ package com.example.capstone.service;
 
 import com.example.capstone.constant.AppConstant;
 import com.example.capstone.constant.AppConstant.*;
-import com.example.capstone.domain.common.SearchSpecification;
 import com.example.capstone.domain.dao.Category;
-import com.example.capstone.domain.dao.Tool;
 import com.example.capstone.domain.dto.CategoryDto;
-import com.example.capstone.domain.payload.request.SearchRequest;
 import com.example.capstone.repository.CategoryRepository;
 import com.example.capstone.repository.CourseRepository;
 import com.example.capstone.repository.OrderRepository;
 import com.example.capstone.util.ResponseUtil;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,9 +22,6 @@ import com.example.capstone.constant.BucketName;
 
 
 import java.util.*;
-
-import static org.apache.http.entity.ContentType.*;
-import static org.apache.http.entity.ContentType.IMAGE_JPEG;
 
 @Service
 @Slf4j
@@ -61,7 +52,7 @@ public class CategoryService {
             List<CategoryDto> request = new ArrayList<>();
 
             for (Category category: categoryList){
-                Integer countUser = orderRepository.countOrderByCourse_CategoryId(category.getId());
+                Integer countUser = orderRepository.countOrderByCourse_CategoryIdAndCourseIsDeletedFalse(category.getId());
                 Integer countCourse = courseRepository.countCourseByCategoryId(category.getId());
                 CategoryDto categoryDto = mapper.map(category, CategoryDto.class);
                 categoryDto.setCountCourse(countCourse);
@@ -85,7 +76,7 @@ public class CategoryService {
             List<CategoryDto> request = new ArrayList<>();
 
             for (Category category: categoryList){
-                Integer countUser = orderRepository.countOrderByCourse_CategoryId(category.getId());
+                Integer countUser = orderRepository.countOrderByCourse_CategoryIdAndCourseIsDeletedFalse(category.getId());
                 Integer countCourse = courseRepository.countCourseByCategoryId(category.getId());
                 CategoryDto categoryDto = mapper.map(category, CategoryDto.class);
                 categoryDto.setCountCourse(countCourse);
@@ -109,7 +100,7 @@ public class CategoryService {
                 log.info("category with ID [{}] not found", id);
                 return ResponseUtil.build(ResponseCode.DATA_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
             }
-            Integer countUser = orderRepository.countOrderByCourse_CategoryId(category.get().getId());
+            Integer countUser = orderRepository.countOrderByCourse_CategoryIdAndCourseIsDeletedFalse(category.get().getId());
             Integer countCourse = courseRepository.countCourseByCategoryId(id);
             CategoryDto request = mapper.map(category, CategoryDto.class);
             request.setCountUser(countUser);

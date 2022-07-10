@@ -3,17 +3,11 @@ package com.example.capstone.service;
 import com.example.capstone.constant.AppConstant;
 import com.example.capstone.constant.AppConstant.*;
 import com.example.capstone.constant.BucketName;
-import com.example.capstone.domain.common.SearchSpecification;
 import com.example.capstone.domain.dao.Category;
 import com.example.capstone.domain.dao.Course;
-import com.example.capstone.domain.dao.Order;
-import com.example.capstone.domain.dao.User;
-import com.example.capstone.domain.dto.CategoryDto;
 import com.example.capstone.domain.dto.CourseDto;
-import com.example.capstone.domain.payload.request.SearchRequest;
 import com.example.capstone.repository.*;
 import com.example.capstone.util.ResponseUtil;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
-
-import static org.apache.http.entity.ContentType.*;
-import static org.apache.http.entity.ContentType.IMAGE_JPEG;
 
 @Service
 @Slf4j
@@ -58,8 +49,8 @@ public class CourseService {
             List<Course> courses = courseRepository.findAllByOrderByRatingDesc();
             List<CourseDto> courseDtoList = new ArrayList<>();
             for (Course course: courses){
-                Integer countUser = orderRepository.countOrderByCourseId(course.getId());
-                Double rating = reviewRepository.averageOfCourseReviewRating(course.getId());
+                Integer countUser = orderRepository.countOrderByCourseIdAndCourseIsDeletedFalse(course.getId());
+                Double rating = reviewRepository.averageOfCourseReviewRatingAndCourseIsDeletedFalse(course.getId());
                 CourseDto courseDto = mapper.map(course, CourseDto.class);
                 courseDto.setRating(Objects.requireNonNullElse(rating,0.0));
                 courseDto.setCountUser(countUser);
@@ -88,8 +79,8 @@ public class CourseService {
 
             List<CourseDto> request = new ArrayList<>();
             for (Course course: courseList){
-                Integer countUser = orderRepository.countOrderByCourseId(course.getId());
-                Double rating = reviewRepository.averageOfCourseReviewRating(course.getId());
+                Integer countUser = orderRepository.countOrderByCourseIdAndCourseIsDeletedFalse(course.getId());
+                Double rating = reviewRepository.averageOfCourseReviewRatingAndCourseIsDeletedFalse(course.getId());
                 CourseDto courseDto = mapper.map(course, CourseDto.class);
                 courseDto.setRating(Objects.requireNonNullElse(rating,0.0));
                 courseDto.setCountUser(countUser);
@@ -117,8 +108,8 @@ public class CourseService {
 
             List<CourseDto> request = new ArrayList<>();
             for (Course course: courseList){
-                Integer countUser = orderRepository.countOrderByCourseId(course.getId());
-                Double rating = reviewRepository.averageOfCourseReviewRating(course.getId());
+                Integer countUser = orderRepository.countOrderByCourseIdAndCourseIsDeletedFalse(course.getId());
+                Double rating = reviewRepository.averageOfCourseReviewRatingAndCourseIsDeletedFalse(course.getId());
                 CourseDto courseDto = mapper.map(course, CourseDto.class);
                 courseDto.setRating(Objects.requireNonNullElse(rating,0.0));
                 courseDto.setCountUser(countUser);
@@ -141,8 +132,8 @@ public class CourseService {
                 log.info("Course with ID [{}] not found", id);
                 return ResponseUtil.build(ResponseCode.DATA_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
             }
-            Integer countUser = orderRepository.countOrderByCourseId(id);
-            Double rating = reviewRepository.averageOfCourseReviewRating(id);
+            Integer countUser = orderRepository.countOrderByCourseIdAndCourseIsDeletedFalse(id);
+            Double rating = reviewRepository.averageOfCourseReviewRatingAndCourseIsDeletedFalse(id);
             CourseDto request = mapper.map(course, CourseDto.class);
             request.setRating(Objects.requireNonNullElse(rating,0.0));
             request.setCountUser(countUser);
