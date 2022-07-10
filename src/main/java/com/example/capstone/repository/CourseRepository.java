@@ -17,6 +17,6 @@ public interface CourseRepository extends JpaRepository<Course, Long> , JpaSpeci
     List<Course> findAllByCategoryId(Long categoryId);
     Integer countCourseByCategoryId(Long id);
 
-    @Query("SELECT p FROM Course p ORDER BY p.rating DESC")
+    @Query("SELECT p FROM Course p ORDER BY p.countUser DESC")
     List<Course> findAllByOrderByRatingDesc();
 }

@@ -47,6 +47,8 @@ public class Course extends BaseDAO {
 
     private String imageFileName;
 
+    private Integer countUser;
+
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
