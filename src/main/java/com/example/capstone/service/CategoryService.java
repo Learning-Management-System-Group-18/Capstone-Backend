@@ -109,8 +109,10 @@ public class CategoryService {
                 log.info("category with ID [{}] not found", id);
                 return ResponseUtil.build(ResponseCode.DATA_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
             }
+            Integer countUser = orderRepository.countOrderByCourse_CategoryId(category.get().getId());
             Integer countCourse = courseRepository.countCourseByCategoryId(id);
             CategoryDto request = mapper.map(category, CategoryDto.class);
+            request.setCountUser(countUser);
             request.setCountCourse(countCourse);
 
             log.info("Successfully retrieved Category with ID : {}", id);
