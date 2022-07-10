@@ -245,6 +245,13 @@ public class CourseService {
                 return ResponseUtil.build(ResponseCode.DATA_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
             }
             Course course = optionalCourse.get();
+
+            if (course.getUrlBucket() == null){
+                courseRepository.delete(course);
+                log.info("Successfully delete course with ID : [{}]", id);
+                return ResponseUtil.build(ResponseCode.SUCCESS,null,HttpStatus.OK);
+            }
+
             uploadFileService.delete(course.getUrlBucket(),course.getImageFileName());
             courseRepository.delete(course);
 

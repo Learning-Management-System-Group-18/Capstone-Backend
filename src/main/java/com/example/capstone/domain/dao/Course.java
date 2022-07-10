@@ -66,4 +66,8 @@ public class Course extends BaseDAO {
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "course", orphanRemoval = true)
     private List<Review> reviews;
+
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "course", orphanRemoval = true)
+    private List<Order> orders;
 }
