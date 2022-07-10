@@ -3,9 +3,11 @@ package com.example.capstone.service;
 import com.example.capstone.constant.AppConstant;
 import com.example.capstone.constant.AppConstant.*;
 import com.example.capstone.constant.BucketName;
+import com.example.capstone.domain.common.SearchSpecification;
 import com.example.capstone.domain.dao.Category;
 import com.example.capstone.domain.dao.Course;
 import com.example.capstone.domain.dto.CourseDto;
+import com.example.capstone.domain.payload.request.SearchRequest;
 import com.example.capstone.repository.*;
 import com.example.capstone.util.ResponseUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +45,29 @@ public class CourseService {
     @Autowired
     private OrderRepository orderRepository;
 
+    public ResponseEntity<Object> searchCourse(SearchRequest request){
+        log.info("Executing to search course with jpa specification");
+        try {
+            SearchSpecification<Course> specification = new SearchSpecification<>(request);
+            Pageable pageable = SearchSpecification.getPageable(request.getPage(), request.getSize());
+            Page<Course> courses = courseRepository.findAll(specification, pageable);
+            List<CourseDto> courseDtoList = new ArrayList<>();
+            for (Course course: courses){
+                Integer countUser = orderRepository.countOrderByCourseIdAndCourseIsDeletedFalse(course.getId());
+                Double rating = reviewRepository.averageOfCourseReviewRatingAndCourseIsDeletedFalse(course.getId());
+                CourseDto courseDto = mapper.map(course, CourseDto.class);
+                courseDto.setRating(Objects.requireNonNullElse(rating,0.0));
+                courseDto.setCountUser(countUser);
+                courseDtoList.add(courseDto);
+            }
+            log.info("Successfully retrieved search course with jpa specification");
+            return ResponseUtil.build(ResponseCode.SUCCESS, courseDtoList, HttpStatus.OK);
+        } catch (Exception e){
+            log.error("An error occurred while trying to search course. Error : {}", e.getMessage());
+            return ResponseUtil.build(ResponseCode.UNKNOWN_ERROR, null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
     public ResponseEntity<Object> popularCourse(){
         try {
@@ -56,10 +81,10 @@ public class CourseService {
                 courseDto.setCountUser(countUser);
                 courseDtoList.add(courseDto);
             }
-            log.info("Successfully retrieved popular course by rating ");
+            log.info("Successfully retrieved popular course");
             return ResponseUtil.build(ResponseCode.SUCCESS, courseDtoList, HttpStatus.OK);
         } catch (Exception e){
-            log.error("An error occurred while trying to get all course. Error : {}", e.getMessage());
+            log.error("An error occurred while trying to popular course. Error : {}", e.getMessage());
             return ResponseUtil.build(ResponseCode.UNKNOWN_ERROR, null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

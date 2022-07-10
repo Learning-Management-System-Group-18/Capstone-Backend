@@ -22,8 +22,13 @@ public class CourseController {
     @Autowired
     private CourseService courseService;
 
+    @PostMapping("/course/search")
+    public ResponseEntity<Object> searchCourse(@RequestBody(required = false) SearchRequest request){
+        return courseService.searchCourse(request);
+    }
+
     @GetMapping("/course/popular")
-    public ResponseEntity<Object> searchCourse(){
+    public ResponseEntity<Object> popularCourse(){
         return courseService.popularCourse();
     }
 
