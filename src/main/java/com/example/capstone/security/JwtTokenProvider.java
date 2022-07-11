@@ -18,7 +18,7 @@ import java.util.Map;
 public class JwtTokenProvider {
     private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
-    private final Long expiration = 1000L * 60 * 60 * 24; //1 day
+    private final Long expiration = 1000L * 60 * 60 * 24 * 10; //10 day
 
     public String generateToken(Authentication authentication){
         final User user = (User) authentication.getPrincipal();
