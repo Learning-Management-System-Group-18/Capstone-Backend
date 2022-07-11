@@ -38,8 +38,14 @@ public class CourseDto {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer countUser;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Integer countReview;
+
     @JsonIgnore
     private String imageFileName;
+
+    @JsonIgnore
+    private MentorDto mentor;
 
     private CategoryResponse category;
 
