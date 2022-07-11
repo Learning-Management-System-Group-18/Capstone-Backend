@@ -44,6 +44,31 @@ public class ReviewService {
     @Autowired
     private UserRepository userRepository;
 
+    public ResponseEntity<Object> getReviews(){
+        log.info("Executing get reviews");
+        try {
+            List<Review> reviews = reviewRepository.findTop9ByOrderByRating();
+
+            List<ReviewDto> reviewDtoList = new ArrayList<>();
+
+            for (Review review : reviews){
+                ReviewDto reviewDto = mapper.map(review, ReviewDto.class);
+                reviewDtoList.add(reviewDto);
+            }
+
+            log.info("Successfully retrieved Reviews");
+            return ResponseUtil.build(AppConstant.ResponseCode.SUCCESS,
+                    reviewDtoList,
+                    HttpStatus.OK);
+        } catch (Exception e){
+            log.error("An error occurred while trying to get Reviews. Error : {}",
+                    e.getMessage());
+            return ResponseUtil.build(AppConstant.ResponseCode.UNKNOWN_ERROR,
+                    null,
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public ResponseEntity<Object> getReviewByCourseId(Long courseId, Integer rating,  int page, int size) {
         log.info("Executing get all Review by Course ID [{}]", courseId);
         try {

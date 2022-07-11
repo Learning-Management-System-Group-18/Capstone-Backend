@@ -18,9 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
-import static org.apache.http.entity.ContentType.*;
-import static org.apache.http.entity.ContentType.IMAGE_JPEG;
-
 @Service
 @Slf4j
 public class MentorService {
@@ -35,6 +32,27 @@ public class MentorService {
 
     @Autowired
     private CourseRepository courseRepository;
+
+    public ResponseEntity<Object> topMentor(){
+        log.info("Executing get top mentor");
+        try {
+            List<Mentor> mentors = mentorRepository.findTop10ByOrderById();
+
+            List<MentorDto> mentorDtos = new ArrayList<>();
+
+            for (Mentor mentor : mentors){
+                MentorDto mentorDto = mapper.map(mentor, MentorDto.class);
+                mentorDto.setName(mentor.getName());
+                mentorDto.setUrlImage(mentor.getUrlImage());
+                mentorDtos.add(mentorDto);
+            }
+            log.info("Successfully retrieved top mentor");
+            return ResponseUtil.build(AppConstant.ResponseCode.SUCCESS, mentorDtos, HttpStatus.OK);
+        } catch (Exception e){
+            log.error("An error occurred while trying to get top mentor. Error : {}", e.getMessage());
+            return ResponseUtil.build(AppConstant.ResponseCode.UNKNOWN_ERROR, null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     public ResponseEntity<Object> getAllMentorByCourseId(Long courseId) {
         log.info("Executing get all mentor by Course Id {}", courseId);

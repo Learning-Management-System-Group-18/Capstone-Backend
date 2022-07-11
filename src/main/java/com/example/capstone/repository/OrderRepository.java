@@ -12,7 +12,7 @@ import java.util.List;
 public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecificationExecutor<Order> {
     Integer countOrderByCourse_CategoryIdAndCourseIsDeletedFalse(Long id);
     Integer countOrderByCourseIdAndCourseIsDeletedFalse(Long id);
-    Order findAllByCourseId(Long id);
+
 
     List<Order> findOrderByUserAndCourseIsDeletedFalse(User user);
     boolean existsByCourseIdAndUserIdAndCourseIsDeletedFalse(Long courseId, Long userId);

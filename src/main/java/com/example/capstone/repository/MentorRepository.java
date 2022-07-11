@@ -10,5 +10,6 @@ import java.util.List;
 public interface MentorRepository extends JpaRepository<Mentor, Long> {
     List<Mentor> findAllByCourseId(Long courseId);
 
+    List<Mentor> findTop10ByOrderById();
 
 }

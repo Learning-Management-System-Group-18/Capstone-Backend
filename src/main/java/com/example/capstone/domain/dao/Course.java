@@ -49,6 +49,8 @@ public class Course extends BaseDAO {
 
     private Integer countUser;
 
+    private Integer countReview;
+
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
