@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "orders")
-@SQLDelete(sql = "UPDATE orders SET is_deleted = true WHERE user_id = ? and course_id = ?")
+@SQLDelete(sql = "UPDATE orders SET is_deleted = true WHERE course_id = ? and user_id = ?")
 @Where(clause = "is_deleted = false")
 @IdClass(Order.OrderId.class)
 public class Order extends BaseDAO {
