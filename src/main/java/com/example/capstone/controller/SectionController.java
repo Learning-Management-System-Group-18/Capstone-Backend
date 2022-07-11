@@ -46,6 +46,11 @@ public class SectionController {
         return sectionService.createNewSection(courseId,request);
     }
 
+    @PutMapping("/admin/section")
+    public ResponseEntity<Object> updateSection(@RequestParam(value = "id") Long id,
+                                                @RequestBody SectionDto request){
+        return sectionService.updateById(id, request);
+    }
 
     @DeleteMapping("/admin/section")
     public ResponseEntity<Object> deleteSection(@RequestParam(value = "id") Long id){
