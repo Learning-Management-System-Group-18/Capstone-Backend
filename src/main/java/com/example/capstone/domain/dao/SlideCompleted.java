@@ -19,7 +19,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Entity
 @Table(name = "slideCompleted")
-@SQLDelete(sql = "UPDATE slideCompleted SET is_deleted = true WHERE user_id = ? and course_id = ?")
+@SQLDelete(sql = "UPDATE slideCompleted SET is_deleted = true WHERE course_id = ? and user_id = ?  ")
 @Where(clause = "is_deleted = false")
 @IdClass(SlideCompleted.SlideCompletedId.class)
 public class SlideCompleted extends BaseDAO {
