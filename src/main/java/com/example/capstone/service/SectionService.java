@@ -168,6 +168,29 @@ public class SectionService {
         }
     }
 
+    public ResponseEntity<Object> updateById(Long id, SectionDto request){
+        log.info("Executing update existing section");
+        try {
+            Optional<Section> optionalSection = sectionRepository.findById(id);
+            if (optionalSection.isEmpty()){
+                log.info("Section With ID : [{}] is not found", id);
+                return ResponseUtil.build(ResponseCode.DATA_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
+            }
+            Optional<Course> course = courseRepository.findById(optionalSection.get().getCourse().getId());
+            optionalSection.ifPresent(section -> {
+                section.setTitle(request.getTitle());
+                section.setCourse(course.get());
+                sectionRepository.save(section);
+            });
+
+            log.info("Successfully updated Section with Id : [{}]",id);
+            return ResponseUtil.build(ResponseCode.SUCCESS,mapper.map(optionalSection.get(),SectionDto.class),HttpStatus.OK);
+        } catch (Exception e){
+            log.info("An error occurred while trying to update existing section. Error : {}", e.getMessage());
+            return ResponseUtil.build(ResponseCode.UNKNOWN_ERROR,null,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public ResponseEntity<Object> deleteById(Long id){
         log.info("Executing delete existing Section");
         try {
