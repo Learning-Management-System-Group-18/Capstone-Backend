@@ -30,6 +30,17 @@ public class SectionController {
 
     }
 
+    @GetMapping("/section/content")
+    public ResponseEntity<Object> getAllContentByCourseId(@RequestParam(value = "courseId") Long courseId,
+                                                           Principal principal){
+        if (principal != null){
+            return sectionService.getAllContentByCourseId(courseId, principal.getName());
+        } else {
+            return ResponseUtil.build(AppConstant.ResponseCode.NOT_LOGGED_IN,null, HttpStatus.FORBIDDEN);
+        }
+
+    }
+
     @GetMapping("/sections")
     public ResponseEntity<Object> getAllSectionByCourseId(@RequestParam(value = "courseId") Long courseId){
         return sectionService.getAllSectionByCourseId(courseId);

@@ -6,6 +6,7 @@ import com.example.capstone.domain.dao.User;
 import com.example.capstone.domain.dao.UserProfile;
 import com.example.capstone.domain.payload.request.LoginRequest;
 import com.example.capstone.domain.payload.request.RegisterRequest;
+import com.example.capstone.domain.payload.request.ResetPasswordRequest;
 import com.example.capstone.domain.payload.response.RegisterResponse;
 import com.example.capstone.domain.payload.response.TokenResponse;
 import com.example.capstone.repository.RoleRepository;
@@ -24,6 +25,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +38,8 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class AuthService {
+
+
 
     @Autowired
     private UserProfileRepository userProfileRepository;
@@ -94,7 +98,7 @@ public class AuthService {
 //        }
 //         end of temporary code
 
-        roleRepository.findByName(AppConstant.RoleType.ROLE_USER).ifPresent(roles::add);
+        roleRepository.findByName(AppConstant.RoleType.ROLE_ADMIN).ifPresent(roles::add);
 
         user.setRoles(roles);
         userRepository.save(user);
@@ -135,6 +139,33 @@ public class AuthService {
                     HttpStatus.BAD_REQUEST
             );
         } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return ResponseUtil.build(
+                    AppConstant.ResponseCode.UNKNOWN_ERROR,
+                    "null",
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public ResponseEntity<Object> changePassword(ResetPasswordRequest request, String email){
+        log.info("Executing to change password");
+        try {
+            Optional<User> optionalUser = userRepository.findUserByEmail(email);
+            String oldPassword = optionalUser.get().getPassword();
+
+            if (!passwordEncoder.matches(request.getOldPassword(), oldPassword )) {
+                log.info("password not same");
+                return ResponseUtil.build(AppConstant.ResponseCode.BAD_CREDENTIALS,"Wrong Password",HttpStatus.BAD_REQUEST);
+            }
+            optionalUser.ifPresent(user -> {
+                user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+                userRepository.save(user);
+            });
+
+            log.info("Successfully change password");
+            return ResponseUtil.build(AppConstant.ResponseCode.SUCCESS,"Success Change Password",HttpStatus.OK);
+        } catch (Exception e){
             log.error(e.getMessage(), e);
             return ResponseUtil.build(
                     AppConstant.ResponseCode.UNKNOWN_ERROR,
