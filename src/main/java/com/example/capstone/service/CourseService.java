@@ -45,6 +45,7 @@ public class CourseService {
     @Autowired
     private OrderRepository orderRepository;
 
+
     public ResponseEntity<Object> searchCourse(SearchRequest request){
         log.info("Executing to search course with jpa specification");
         try {
