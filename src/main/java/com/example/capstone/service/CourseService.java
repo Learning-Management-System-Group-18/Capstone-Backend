@@ -184,16 +184,14 @@ public class CourseService {
     }
     public ResponseEntity<Object> NewCourse(Long categoryId, CourseDto request){
         log.info("Executing create new course");
-        if (courseRepository.existsByTitle(request.getTitle())) {
-            log.info("Course with name : {} already exist", request.getTitle());
-            return ResponseUtil.build(
-                    AppConstant.ResponseCode.BAD_CREDENTIALS,
-                    "Course with name already exist",
-                    HttpStatus.BAD_REQUEST
-            );
-        }
         try {
-
+            if (courseRepository.existsByTitle(request.getTitle())) {
+                log.info("Course with name : {} already exist", request.getTitle());
+                return ResponseUtil.build(AppConstant.ResponseCode.BAD_CREDENTIALS,
+                        "Course with name already exist",
+                        HttpStatus.BAD_REQUEST
+                );
+            }
             Optional<Category> category = categoryRepository.findById(categoryId);
             Course course = mapper.map(request, Course.class);
             course.setCategory(category.get());
