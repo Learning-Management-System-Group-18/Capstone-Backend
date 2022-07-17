@@ -22,6 +22,11 @@ public class MentorController {
         return mentorService.getAllMentorByCourseId(courseId);
     }
 
+    @GetMapping("/mentor/top")
+    public ResponseEntity<Object> topMentor(){
+        return mentorService.topMentor();
+    }
+
     @PostMapping(
             path = "/admin/mentor",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,

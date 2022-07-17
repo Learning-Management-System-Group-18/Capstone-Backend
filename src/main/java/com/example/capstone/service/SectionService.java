@@ -10,6 +10,7 @@ import com.example.capstone.domain.dao.*;
 import com.example.capstone.domain.dto.ContentDto;
 import com.example.capstone.domain.dto.CourseDto;
 import com.example.capstone.domain.payload.response.QuizResponse;
+import com.example.capstone.domain.payload.response.SectionResponse;
 import com.example.capstone.domain.payload.response.SlideResponse;
 import com.example.capstone.domain.payload.response.VideoResponse;
 import com.example.capstone.repository.*;
@@ -105,6 +106,66 @@ public class SectionService {
             return ResponseUtil.build(ResponseCode.SUCCESS, request, HttpStatus.OK);
         } catch (Exception e){
             log.error("An error occurred while trying to get all content. Error : {}", e.getMessage());
+            return ResponseUtil.build(ResponseCode.UNKNOWN_ERROR, null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<Object> getAllContentByCourseId(Long courseId, String email) {
+        log.info("Executing get all section");
+        try {
+
+            Optional<User> userOptional = userRepository.findUserByEmail(email);
+            if (userOptional.isEmpty()){
+                log.info("User with Email [{}] not found",email);
+                return ResponseUtil.build(ResponseCode.DATA_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
+            }
+
+            List<Section> sections = sectionRepository.findAllByCourseId(courseId);
+
+            List<SectionResponse> sectionResponses = new ArrayList<>();
+            for (Section section: sections){
+                ContentDto request = new ContentDto();
+
+                List<SlideResponse> slideResponses = new ArrayList<>();
+                List<Slide> slides = slideRepository.findAllBySectionId(section.getId());
+
+                for (Slide slide: slides){
+                    SlideResponse slideResponse = mapper.map(slide, SlideResponse.class);
+                    Boolean isCompleted = slideCompletedRepository.existsByUserIdAndSlideId(userOptional.get().getId(), slideResponse.getId());
+                    slideResponse.setCompleted(isCompleted);
+                    slideResponses.add(slideResponse);
+                }
+
+                List<VideoResponse> videoResponses = new ArrayList<>();
+                List<Video> videos = videoRepository.findAllBySectionId(section.getId());
+
+                for (Video video: videos){
+                    VideoResponse videoResponse = mapper.map(video, VideoResponse.class);
+                    Boolean isCompleted = videoCompletedRepository.existsByUserIdAndVideoId(userOptional.get().getId(), videoResponse.getId());
+                    videoResponse.setCompleted(isCompleted);
+                    videoResponses.add(videoResponse);
+                }
+                List<QuizResponse> quizResponses = new ArrayList<>();
+                List<Quiz> quizzes = quizRepository.findAllBySectionId(section.getId());
+
+                for (Quiz quiz: quizzes){
+                    QuizResponse quizResponse = mapper.map(quiz, QuizResponse.class);
+                    Boolean isCompleted = quizCompletedRepository.existsByUserIdAndQuizId(userOptional.get().getId(), quizResponse.getId());
+                    quizResponse.setCompleted(isCompleted);
+                    quizResponses.add(quizResponse);
+                }
+
+                request.setQuiz(quizResponses);
+                request.setSlide(slideResponses);
+                request.setVideo(videoResponses);
+                SectionResponse sectionResponse = mapper.map(section, SectionResponse.class);
+                sectionResponse.setContent(request);
+                sectionResponses.add(sectionResponse);
+            }
+            log.info("Successfully retrieved all content");
+            return ResponseUtil.build(ResponseCode.SUCCESS, sectionResponses, HttpStatus.OK);
+        } catch (Exception e){
+            log.error("An error occurred while trying to get all section. Error : {}", e.getMessage());
             return ResponseUtil.build(ResponseCode.UNKNOWN_ERROR, null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

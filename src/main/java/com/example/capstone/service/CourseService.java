@@ -45,6 +45,7 @@ public class CourseService {
     @Autowired
     private OrderRepository orderRepository;
 
+
     public ResponseEntity<Object> searchCourse(SearchRequest request){
         log.info("Executing to search course with jpa specification");
         try {
@@ -53,11 +54,13 @@ public class CourseService {
             Page<Course> courses = courseRepository.findAll(specification, pageable);
             List<CourseDto> courseDtoList = new ArrayList<>();
             for (Course course: courses){
+                Integer countReview = reviewRepository.countAllByCourseId(course.getId());
                 Integer countUser = orderRepository.countOrderByCourseIdAndCourseIsDeletedFalse(course.getId());
                 Double rating = reviewRepository.averageOfCourseReviewRatingAndCourseIsDeletedFalse(course.getId());
                 CourseDto courseDto = mapper.map(course, CourseDto.class);
                 courseDto.setRating(Objects.requireNonNullElse(rating,0.0));
-                courseDto.setCountUser(countUser);
+                courseDto.setCountUser(Objects.requireNonNullElse(countUser, 0));
+                courseDto.setCountReview(Objects.requireNonNullElse(countReview, 0));
                 courseDtoList.add(courseDto);
             }
             log.info("Successfully retrieved search course with jpa specification");
@@ -71,14 +74,16 @@ public class CourseService {
 
     public ResponseEntity<Object> popularCourse(){
         try {
-            List<Course> courses = courseRepository.findAllByOrderByRatingDesc();
+            List<Course> courses = courseRepository.popularCourse();
             List<CourseDto> courseDtoList = new ArrayList<>();
             for (Course course: courses){
+                Integer countReview = reviewRepository.countAllByCourseId(course.getId());
                 Integer countUser = orderRepository.countOrderByCourseIdAndCourseIsDeletedFalse(course.getId());
                 Double rating = reviewRepository.averageOfCourseReviewRatingAndCourseIsDeletedFalse(course.getId());
                 CourseDto courseDto = mapper.map(course, CourseDto.class);
                 courseDto.setRating(Objects.requireNonNullElse(rating,0.0));
-                courseDto.setCountUser(countUser);
+                courseDto.setCountUser(Objects.requireNonNullElse(countUser, 0));
+                courseDto.setCountReview(Objects.requireNonNullElse(countReview, 0));
                 courseDtoList.add(courseDto);
             }
             log.info("Successfully retrieved popular course");
@@ -104,11 +109,13 @@ public class CourseService {
 
             List<CourseDto> request = new ArrayList<>();
             for (Course course: courseList){
+                Integer countReview = reviewRepository.countAllByCourseId(course.getId());
                 Integer countUser = orderRepository.countOrderByCourseIdAndCourseIsDeletedFalse(course.getId());
                 Double rating = reviewRepository.averageOfCourseReviewRatingAndCourseIsDeletedFalse(course.getId());
                 CourseDto courseDto = mapper.map(course, CourseDto.class);
                 courseDto.setRating(Objects.requireNonNullElse(rating,0.0));
-                courseDto.setCountUser(countUser);
+                courseDto.setCountUser(Objects.requireNonNullElse(countUser, 0));
+                courseDto.setCountReview(Objects.requireNonNullElse(countReview, 0));
                 request.add(courseDto);
             }
             log.info("Successfully retrieved all course with pagination");
@@ -133,11 +140,13 @@ public class CourseService {
 
             List<CourseDto> request = new ArrayList<>();
             for (Course course: courseList){
+                Integer countReview = reviewRepository.countAllByCourseId(course.getId());
                 Integer countUser = orderRepository.countOrderByCourseIdAndCourseIsDeletedFalse(course.getId());
                 Double rating = reviewRepository.averageOfCourseReviewRatingAndCourseIsDeletedFalse(course.getId());
                 CourseDto courseDto = mapper.map(course, CourseDto.class);
                 courseDto.setRating(Objects.requireNonNullElse(rating,0.0));
-                courseDto.setCountUser(countUser);
+                courseDto.setCountUser(Objects.requireNonNullElse(countUser, 0));
+                courseDto.setCountReview(Objects.requireNonNullElse(countReview, 0));
                 request.add(courseDto);
 
             }
@@ -157,11 +166,13 @@ public class CourseService {
                 log.info("Course with ID [{}] not found", id);
                 return ResponseUtil.build(ResponseCode.DATA_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
             }
+            Integer countReview = reviewRepository.countAllByCourseId(id);
             Integer countUser = orderRepository.countOrderByCourseIdAndCourseIsDeletedFalse(id);
             Double rating = reviewRepository.averageOfCourseReviewRatingAndCourseIsDeletedFalse(id);
             CourseDto request = mapper.map(course, CourseDto.class);
             request.setRating(Objects.requireNonNullElse(rating,0.0));
-            request.setCountUser(countUser);
+            request.setCountUser(Objects.requireNonNullElse(countUser, 0));
+            request.setCountReview(Objects.requireNonNullElse(countReview, 0));
 
             log.info("Successfully retrieved Course with ID : {}", id);
             return ResponseUtil.build(ResponseCode.SUCCESS,request,HttpStatus.OK);
@@ -173,16 +184,14 @@ public class CourseService {
     }
     public ResponseEntity<Object> NewCourse(Long categoryId, CourseDto request){
         log.info("Executing create new course");
-        if (courseRepository.existsByTitle(request.getTitle())) {
-            log.info("Course with name : {} already exist", request.getTitle());
-            return ResponseUtil.build(
-                    AppConstant.ResponseCode.BAD_CREDENTIALS,
-                    "Course with name already exist",
-                    HttpStatus.BAD_REQUEST
-            );
-        }
         try {
-
+            if (courseRepository.existsByTitle(request.getTitle())) {
+                log.info("Course with name : {} already exist", request.getTitle());
+                return ResponseUtil.build(AppConstant.ResponseCode.BAD_CREDENTIALS,
+                        "Course with name already exist",
+                        HttpStatus.BAD_REQUEST
+                );
+            }
             Optional<Category> category = categoryRepository.findById(categoryId);
             Course course = mapper.map(request, Course.class);
             course.setCategory(category.get());

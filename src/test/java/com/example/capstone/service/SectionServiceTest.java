@@ -7,6 +7,7 @@ import com.example.capstone.domain.dto.ContentDto;
 import com.example.capstone.domain.dto.CourseDto;
 import com.example.capstone.domain.dto.SectionDto;
 import com.example.capstone.domain.payload.response.QuizResponse;
+import com.example.capstone.domain.payload.response.SectionResponse;
 import com.example.capstone.domain.payload.response.SlideResponse;
 import com.example.capstone.domain.payload.response.VideoResponse;
 import com.example.capstone.repository.*;
@@ -217,13 +218,115 @@ class SectionServiceTest {
         when(mapper.map(any(),eq(QuizResponse.class))).thenReturn(quizResponse);
 
         ResponseEntity<Object> responseEntity = sectionService.getAllContentBySectionId(1L,"email");
-        ApiResponse apiResponse = (ApiResponse) responseEntity.getBody();
-
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
 
 
     }
+
+    @Test
+    void getAllContentByCourseId_Success() {
+        List<Quiz> quizList = new ArrayList<>();
+        List<Slide> slideList = new ArrayList<>();
+        List<Video> videoList = new ArrayList<>();
+        ContentDto request = new ContentDto();
+        List<Section> sections = new ArrayList<>();
+
+        SectionResponse sectionResponse = SectionResponse.builder()
+                .id(1L)
+                .title("section")
+                .content(request)
+                .build();
+
+        Section section = Section.builder()
+                .id(1L)
+                .build();
+        sections.add(section);
+
+
+        QuizResponse quizResponse = QuizResponse.builder()
+                .id(1L)
+                .title("Video")
+                .description("description")
+                .link("link")
+                .build();
+
+        VideoResponse videoResponse = VideoResponse.builder()
+                .id(1L)
+                .title("Video")
+                .description("description")
+                .link("link")
+                .build();
+
+        SlideResponse slideResponse = SlideResponse.builder()
+                .id(1L)
+                .title("Slide")
+                .description("description")
+                .link("link")
+                .build();
+
+        Quiz quiz = Quiz.builder()
+                .id(1L)
+                .title("Video")
+                .description("description")
+                .link("link")
+                .build();
+
+        Video video = Video.builder()
+                .id(1L)
+                .title("Video")
+                .description("description")
+                .link("link")
+                .build();
+
+        Slide slide = Slide.builder()
+                .id(1L)
+                .title("Slide")
+                .description("description")
+                .link("link")
+                .build();
+
+        User user = User.builder()
+                .id(1L)
+                .email("ilham@gmail.com")
+                .build();
+
+        quizList.add(quiz);
+        slideList.add(slide);
+        videoList.add(video);
+
+
+        when(userRepository.findUserByEmail(any())).thenReturn(Optional.of(user));
+        when(sectionRepository.findAllByCourseId(anyLong())).thenReturn(sections);
+        when(slideRepository.findAllBySectionId(anyLong())).thenReturn(slideList);
+        when(quizRepository.findAllBySectionId(anyLong())).thenReturn(quizList);
+        when(videoRepository.findAllBySectionId(anyLong())).thenReturn(videoList);
+        when(mapper.map(any(),eq(VideoResponse.class))).thenReturn(videoResponse);
+        when(mapper.map(any(),eq(SlideResponse.class))).thenReturn(slideResponse);
+        when(mapper.map(any(),eq(QuizResponse.class))).thenReturn(quizResponse);
+        when(mapper.map(any(),eq(SectionResponse.class))).thenReturn(sectionResponse);
+
+        ResponseEntity<Object> responseEntity = sectionService.getAllContentByCourseId(1L,"email");
+
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+    }
+
+    @Test
+    void getAllContentByCourseId_NotFound() {
+        when(userRepository.findUserByEmail(any())).thenReturn(Optional.empty());
+        ResponseEntity<Object> responseEntity = sectionService.getAllContentByCourseId(1L,"email");
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+    }
+
+    @Test
+    void getAllContentByCourseId_Error() {
+        when(userRepository.findUserByEmail(any())).thenThrow(NullPointerException.class);
+        ResponseEntity<Object> responseEntity = sectionService.getAllContentByCourseId(1L,"email");
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+    }
+
+
+
 
     @Test
     void getAllContentBySectionId_UserEmpty() {
@@ -284,7 +387,7 @@ class SectionServiceTest {
         when(courseRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         ResponseEntity<Object> responseEntity = sectionService.createNewSection(1L, sectionDto);
-        ApiResponse apiResponse = (ApiResponse) responseEntity.getBody();
+
 
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
 
@@ -303,6 +406,67 @@ class SectionServiceTest {
         ApiResponse apiResponse = (ApiResponse) responseEntity.getBody();
 
         assertEquals(AppConstant.ResponseCode.UNKNOWN_ERROR.getCode(), apiResponse.getStatus().getCode());
+    }
+
+    @Test
+    void updateById_Success() {
+        Course course = Course.builder()
+                .id(1L)
+                .build();
+
+        Section section = Section.builder()
+                .id(1L)
+                .title("Section")
+                .course(course)
+                .build();
+
+        CourseDto courseDto = CourseDto.builder()
+                .id(1L)
+                .build();
+
+        SectionDto sectionDto = SectionDto.builder()
+                .id(1L)
+                .title("Section")
+                .course(courseDto)
+                .build();
+
+        when(sectionRepository.findById(anyLong())).thenReturn(Optional.of(section));
+        when(courseRepository.findById(anyLong())).thenReturn(Optional.of(course));
+        when(mapper.map(any(), eq(Section.class))).thenReturn(section);
+        when(sectionRepository.save(any())).thenReturn(section);
+        when(mapper.map(any(), eq(SectionDto.class))).thenReturn(sectionDto);
+
+        ResponseEntity<Object> responseEntity = sectionService.updateById(1L, sectionDto);
+        ApiResponse apiResponse = (ApiResponse) responseEntity.getBody();
+
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals("Section", ((SectionDto) apiResponse.getData()).getTitle());
+
+    }
+
+    @Test
+    void updateById_NotFound() {
+        SectionDto sectionDto = SectionDto.builder()
+                .id(1L)
+                .title("Section")
+                .build();
+
+        when(sectionRepository.findById(anyLong())).thenReturn(Optional.empty());
+        ResponseEntity<Object> responseEntity = sectionService.updateById(1L, sectionDto);
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+
+    }
+
+    @Test
+    void updateById_Error() {
+        SectionDto sectionDto = SectionDto.builder()
+                .id(1L)
+                .title("Section")
+                .build();
+
+        when(sectionRepository.findById(anyLong())).thenThrow(NullPointerException.class);
+        ResponseEntity<Object> responseEntity = sectionService.updateById(1L, sectionDto);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
     }
 
     @Test

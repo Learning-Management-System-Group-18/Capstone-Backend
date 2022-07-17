@@ -14,7 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Optional;
@@ -141,6 +143,68 @@ class UserProfileServiceTest {
                 .build();
         when(userRepository.findUserByEmail(anyString())).thenThrow(NullPointerException.class);
         ResponseEntity<Object> responseEntity = userProfileService.updateProfile(userProfileDto,"email");
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+
+    }
+
+    @Test
+    void updateImageUser_Success() {
+        User user = User.builder()
+                .id(1L)
+                .email("ilham@gmail.com")
+                .build();
+
+        UserProfile userProfile = UserProfile.builder()
+                .user(user)
+                .id(1L)
+                .build();
+
+        UserProfileDto userProfileDto = UserProfileDto.builder()
+                .id(1L)
+                .build();
+
+        MockMultipartFile file = new MockMultipartFile(
+                "name",
+                "some-name",
+                MediaType.TEXT_PLAIN_VALUE,
+                "think of this as image".getBytes());
+
+        when(userProfileRepository.findUserProfileByEmail(anyString())).thenReturn(Optional.of(userProfile));
+        when(userProfileRepository.save(any())).thenReturn(userProfile);
+        when(mapper.map(any(),eq(UserProfileDto.class))).thenReturn(userProfileDto);
+
+        ResponseEntity<Object> responseEntity = userProfileService.updateImageUser("email",file);
+
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        verify(uploadFileService,times(1)).upload(any(),any(),any(),any());
+
+    }
+
+    @Test
+    void updateImageUser_NotFound() {
+
+        MockMultipartFile file = new MockMultipartFile(
+                "name",
+                "some-name",
+                MediaType.TEXT_PLAIN_VALUE,
+                "think of this as image".getBytes());
+
+        when(userProfileRepository.findUserProfileByEmail(anyString())).thenReturn(Optional.empty());
+        ResponseEntity<Object> responseEntity = userProfileService.updateImageUser("email",file);
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+
+    }
+
+    @Test
+    void updateImageUser_Error() {
+        MockMultipartFile file = new MockMultipartFile(
+                "name",
+                "some-name",
+                MediaType.TEXT_PLAIN_VALUE,
+                "think of this as image".getBytes());
+
+        when(userProfileRepository.findUserProfileByEmail(anyString())).thenThrow(NullPointerException.class);
+        ResponseEntity<Object> responseEntity = userProfileService.updateImageUser("email",file);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
 
     }

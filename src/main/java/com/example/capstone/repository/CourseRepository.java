@@ -1,6 +1,7 @@
 package com.example.capstone.repository;
 
 import com.example.capstone.domain.dao.Course;
+import com.example.capstone.domain.dao.Mentor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,5 +19,10 @@ public interface CourseRepository extends JpaRepository<Course, Long> , JpaSpeci
     Integer countCourseByCategoryId(Long id);
 
     @Query("SELECT p FROM Course p ORDER BY p.countUser DESC")
-    List<Course> findAllByOrderByRatingDesc();
+    List<Course> popularCourse();
+
+
+    List<Course> findTop10ByOrderByCountUserDesc();
+
+
 }

@@ -207,4 +207,36 @@ class ReviewServiceTest {
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
     }
+
+    @Test
+    void getReviews_Success() {
+        Review review = Review.builder()
+                .review("Review")
+                .rating(4)
+                .build();
+
+        ReviewDto reviewDto = ReviewDto.builder()
+                .review("Review")
+                .rating(4)
+                .build();
+
+        List<Review> reviews = new ArrayList<>();
+
+        reviews.add(review);
+
+        when(reviewRepository.findTop9ByOrderByRating()).thenReturn(reviews);
+        when(mapper.map(any(),eq(ReviewDto.class))).thenReturn(reviewDto);
+
+        ResponseEntity<Object> responseEntity = reviewService.getReviews();
+
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+    }
+
+    @Test
+    void getReviews_Error() {
+        when(reviewRepository.findTop9ByOrderByRating()).thenThrow(NullPointerException.class);
+        ResponseEntity<Object> responseEntity = reviewService.getReviews();
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+
+    }
 }
